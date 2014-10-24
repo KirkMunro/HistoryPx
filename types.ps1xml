@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Types>
+    <Type>
+        <Name>Microsoft.PowerShell.Commands.HistoryInfo</Name>
+        <Members>
+            <ScriptProperty>
+                <Name>ExtendedHistoryInfo</Name>
+                <GetScriptBlock>
+                    [HistoryPx.ExtendedHistoryTable]::Item($this.Id)
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>CommandSuccessful</Name>
+                <GetScriptBlock>
+                    if ($this.ExtendedHistoryInfo -is [HistoryPx.ExtendedHistoryInfo]) {
+                        $this.ExtendedHistoryInfo.CommandSuccessful
+                    }
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>Output</Name>
+                <GetScriptBlock>
+                    if ($this.ExtendedHistoryInfo -is [HistoryPx.ExtendedHistoryInfo]) {
+                        $this.ExtendedHistoryInfo.Output
+                    }
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>Errors</Name>
+                <GetScriptBlock>
+                    if ($this.ExtendedHistoryInfo -is [HistoryPx.ExtendedHistoryInfo]) {
+                        $this.ExtendedHistoryInfo.Errors
+                    }
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>Duration</Name>
+                <GetScriptBlock>
+                    if (($this.ExecutionStatus -eq 'Completed') -and
+                        ($this.EndExecutionTime -ne $null)) {
+                        $this.EndExecutionTime - $this.StartExecutionTime
+                    }
+                </GetScriptBlock>
+            </ScriptProperty>
+        </Members>
+    </Type>
+</Types>
