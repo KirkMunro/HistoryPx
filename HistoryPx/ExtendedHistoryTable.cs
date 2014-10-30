@@ -18,13 +18,24 @@ namespace HistoryPx
 
         static public ExtendedHistoryInfo Item(long historyId)
         {
+            // Return items by looking up the history id
             return (ExtendedHistoryInfo)extendedHistoryTable[(object)historyId];
+        }
+
+        static public void Clear()
+        {
+            // Clear all entries
+            extendedHistoryTable.Clear();
         }
 
         static private OrderedDictionary extendedHistoryTable = new OrderedDictionary();
 
         static internal void Add(long historyId, Nullable<bool> commandSuccessful, Collection<PSObject> output = null, int outputCount = 0, Collection<PSObject> error = null)
         {
+            // If the table does not contains an item, add it; otherwise, add to it
+            // (adding to an item is necessary when multiple commands are generated
+            // as part of a single command, and the output and error data comes from
+            // both commands)
             if (!extendedHistoryTable.Contains(historyId))
             {
                 extendedHistoryTable.Add(historyId, new ExtendedHistoryInfo(historyId, commandSuccessful, output, outputCount, error));
@@ -33,19 +44,16 @@ namespace HistoryPx
             {
                 ((ExtendedHistoryInfo)extendedHistoryTable[historyId]).Update(output, outputCount, error);
             }
+            // Remove entries until we are within the maximum entry count
             while (extendedHistoryTable.Count > MaximumEntryCount)
             {
                 extendedHistoryTable.RemoveAt(0);
             }
         }
 
-        static internal void Clear()
-        {
-            extendedHistoryTable.Clear();
-        }
-
         static internal void Remove(long historyId)
         {
+            // Remove the entry identified by the history id
             extendedHistoryTable.Remove(historyId);
         }
 

@@ -22,6 +22,7 @@ namespace HistoryPx
         private static string writeWarningStream = "writeWarningStream";
 
         protected Collection<PSObject> output = new Collection<PSObject>();
+        protected Collection<PSObject> outputWithHistory = new Collection<PSObject>();
         protected bool adjustHistoryId = false;
         protected int removedObjectCount = 0;
         protected int removedHistoryInfoCount = 0;
@@ -31,6 +32,7 @@ namespace HistoryPx
         {
             // Reset OutDefaultCommand helper variables
             output.Clear();
+            outputWithHistory.Clear();
             adjustHistoryId = false;
             removedObjectCount = 0;
             removedHistoryInfoCount = 0;
@@ -90,6 +92,7 @@ namespace HistoryPx
                     if (output.Count < ExtendedHistoryTable.MaximumItemCountPerEntry)
                     {
                         output.Add(InputObject);
+                        outputWithHistory.Add(InputObject);
                     }
                     else
                     {
@@ -98,6 +101,7 @@ namespace HistoryPx
                 }
                 else
                 {
+                    outputWithHistory.Add(InputObject);
                     removedHistoryInfoCount++;
                 }
             }
@@ -125,25 +129,27 @@ namespace HistoryPx
             // Add warnings if appropriate
             if (removedHistoryInfoCount > 0)
             {
-                PSObject warningRecord = new PSObject(new WarningRecord(string.Format("{0} history information objects removed.", removedHistoryInfoCount)));
+                PSObject warningRecord = new PSObject(new WarningRecord(string.Format("<Omitting {0} history information objects>", removedHistoryInfoCount)));
                 warningRecord.Properties.Add(new PSNoteProperty(writeWarningStream, true));
                 output.Insert(0, warningRecord);
             }
             if (removedObjectCount > 0)
             {
-                PSObject warningRecord = new PSObject(new WarningRecord(string.Format("Output truncated: {0} objects returned, {1} objects removed.", outputCount, removedObjectCount)));
+                PSObject warningRecord = new PSObject(new WarningRecord(string.Format("<Truncated: {0} objects returned, {1} objects removed>", outputCount, removedObjectCount)));
                 warningRecord.Properties.Add(new PSNoteProperty(writeWarningStream, true));
                 output.Insert(0, warningRecord);
+                outputWithHistory.Insert(0, warningRecord);
             }
 
-            // Update the last output collection in the __ variable
-            if (output.Count == 1)
+            // Update the last output collection in the __ variable, allowing for HistoryInfo objects
+            // to be returned as part of that collection
+            if (outputWithHistory.Count == 1)
             {
-                SessionState.PSVariable.Set("__", output[0]);
+                SessionState.PSVariable.Set("__", outputWithHistory[0]);
             }
-            else if (output.Count > 1)
+            else if (outputWithHistory.Count > 1)
             {
-                SessionState.PSVariable.Set("__", output.ToArray());
+                SessionState.PSVariable.Set("__", outputWithHistory.ToArray());
             }
             else
             {
