@@ -166,6 +166,11 @@ namespace HistoryPx
                     // Skip all incomplete parse exceptions
                     continue;
                 }
+                if (errorLogEntry is ActionPreferenceStopException)
+                {
+                    // Skip all action preference stop exceptions
+                    continue;
+                }
                 error.Add(new PSObject(errorLogEntry));
             }
             if (error.Count > 0)
