@@ -43,7 +43,9 @@ limitations under the License.
                         )
 
     FunctionsToExport = @(
+                        'Get-ExtendedHistoryConfiguration'
                         'Get-History'
+                        'Set-ExtendedHistoryConfiguration'
                         )
 
        TypesToProcess = @(
