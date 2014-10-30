@@ -27,7 +27,7 @@ limitations under the License.
 @{
       ModuleToProcess = 'HistoryPx.psm1'
 
-        ModuleVersion = '1.0.0.0'
+        ModuleVersion = '1.0.0.1'
 
                  GUID = '1ceaf4bf-dc01-4790-a06d-c8224daa7027'
 
@@ -76,7 +76,6 @@ limitations under the License.
                         'LICENSE'
                         'NOTICE'
                         'types.ps1xml'
-                        'en-us\HistoryPx.dll-Help.xml'
                         'functions\Get-ExtendedHistoryConfiguration.ps1'
                         'functions\Get-History.ps1'
                         'functions\Set-ExtendedHistoryConfiguration.ps1'
@@ -99,8 +98,8 @@ limitations under the License.
 # SIG # Begin signature block
 # MIIZIAYJKoZIhvcNAQcCoIIZETCCGQ0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUfnvf33l2Ccz0qriGe4JdT0SA
-# JICgghRWMIID7jCCA1egAwIBAgIQfpPr+3zGTlnqS5p31Ab8OzANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUzlqqrvmrfLPQGfK6TYEOzYz2
+# pvSgghRWMIID7jCCA1egAwIBAgIQfpPr+3zGTlnqS5p31Ab8OzANBgkqhkiG9w0B
 # AQUFADCBizELMAkGA1UEBhMCWkExFTATBgNVBAgTDFdlc3Rlcm4gQ2FwZTEUMBIG
 # A1UEBxMLRHVyYmFudmlsbGUxDzANBgNVBAoTBlRoYXd0ZTEdMBsGA1UECxMUVGhh
 # d3RlIENlcnRpZmljYXRpb24xHzAdBgNVBAMTFlRoYXd0ZSBUaW1lc3RhbXBpbmcg
@@ -213,23 +212,23 @@ limitations under the License.
 # aWdpY2VydC5jb20xLjAsBgNVBAMTJURpZ2lDZXJ0IEFzc3VyZWQgSUQgQ29kZSBT
 # aWduaW5nIENBLTECEA3/99JYTi+N6amVWfXCcCMwCQYFKw4DAhoFAKB4MBgGCisG
 # AQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcNAQkDMQwGCisGAQQBgjcCAQQw
-# HAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFLp0
-# LQVIW+5FJAH63zfOgSY49J27MA0GCSqGSIb3DQEBAQUABIIBAAFRmSpI2aKyeL2v
-# 1Pe6ML1RpGkqSynn+meZLhj1Vk1i78WuMDC7FbKjB32bSRCKQHQgQzml16ycQez7
-# YxHQ+lCGuApIbm1fYSAmp2JV1kYLA1Gqp3RG71+K2zC74BIglRYzVc6OwmZrGM03
-# hsAFg9TABqLWfAqhO2RzI0G0qADMl0WquCLM6abIiZhAecBJl2NJxscoFt7SLli2
-# WYOMETFimfq5XyR11XISHagtlSu0tMS+NbD/S+F6RiWE1sl7FxnjKnk896ltsjjd
-# pf6+iPiMxEbHRbdYGK1kNX0yAjrLmTZgHRx44LqRNMGbiQARxi4ijKDOwIdsTlhh
-# wLn1cvGhggILMIICBwYJKoZIhvcNAQkGMYIB+DCCAfQCAQEwcjBeMQswCQYDVQQG
+# HAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFLV9
+# +48l3Xoh+ckYvoUsNOxcZTzwMA0GCSqGSIb3DQEBAQUABIIBAD142jZLJPrSiM64
+# 4iCUr2nb8rxaah1fVnrmdyRmlmpDmHqwKDW0w3Gv8oC9ssdtGyyZ5L4WD3ZHRa0I
+# CQNqq5g3/SoxXhuFzIaNxdeWr7XrGwBWP18W/m+c0e0irknNu5DgJzPvDqxb9gjO
+# wMNIf1z2Ocdq8qLewBCPb5AVXuTdxXEsKOnEYCQpVtR1Bx42Mfl/letilWaNFR6B
+# bd1PH+T1OobXPB/o7W+ETE1Lx6W/zLX5gsBPG3wkxYwdzNG0QCGsmU/MB3l09emU
+# 5ELJ66bye9rRo0+mFNkk8aJcmz1QGRYMA13RM6B87FdcLTN7If8IuSiNbXMD/mZO
+# ag98SdqhggILMIICBwYJKoZIhvcNAQkGMYIB+DCCAfQCAQEwcjBeMQswCQYDVQQG
 # EwJVUzEdMBsGA1UEChMUU3ltYW50ZWMgQ29ycG9yYXRpb24xMDAuBgNVBAMTJ1N5
 # bWFudGVjIFRpbWUgU3RhbXBpbmcgU2VydmljZXMgQ0EgLSBHMgIQDs/0OMj+vzVu
 # BNhqmBsaUDAJBgUrDgMCGgUAoF0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAc
-# BgkqhkiG9w0BCQUxDxcNMTQxMDMwMTgwNjExWjAjBgkqhkiG9w0BCQQxFgQUVjTh
-# L10rPEWInUCVlCunaxnC+VkwDQYJKoZIhvcNAQEBBQAEggEAha6ftu9aYeY0LAbG
-# DT4ywllPddTbscAcmZ53VK2Nw8TZ5M9fqxFVmyRWtamowhmawwJrjtmQf4EzmYmg
-# RnOtszVxR9GJmBDljUtgpCbmVbH6PLkF72VotoOa+CdkBEY+butBsdsPBMrDVNvi
-# 3aJAbvHgdAiIY3A8UlYtOJWP3laMOzr0T8tovHm+w+6Lj2jnJeWC9LYKNEBlgED3
-# dDpxwHu1Jkl87gFORpYyBqXi5qM+mavxOB0uvaE+4gYdQJzPsOBnpkCumbiN0qdJ
-# pZxM7IkZMEXzTednBp3BDmQOq3ywBV/spwXKKIRgfUvhAtkwuqcSo+ODDlILsdPS
-# xRBX0w==
+# BgkqhkiG9w0BCQUxDxcNMTQxMDMwMTk0OTM4WjAjBgkqhkiG9w0BCQQxFgQUMpj7
+# 5zetRQ3CvEQbCotnP2Mrv6QwDQYJKoZIhvcNAQEBBQAEggEAb6Ur5bih0dG9dCLN
+# 58MAQ6N/t+s7/lA3qg+bPApD+VRkBfaRyxNJJ6bJFgwJ/yHGowQRHPHlssNt1MSw
+# ByqS90TlTU75v1LTZrFN0hAj3Q1Vu2q0Vl+9WG5vJc0sXdcLt56nr3Wgsn96LqVa
+# ZrJC3z2RofcUEk7Q9+iEU6ZfizEd25EY1l9c/nV8OhWGtQFsnwudS4ttXzKTePMN
+# KKlIkk5qxRZPXLqJp+lB37ZLZyqm3wBf54R+OcHiXTMwNN0XQMQFaOHpEhLh/qTt
+# T25dtDVlnesabiRVld0I+804gH7qc9/JpkvXm21K0FNl9OB32eycqqHtQVRpabHY
+# 9SSAww==
 # SIG # End signature block
