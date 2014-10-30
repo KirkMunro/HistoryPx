@@ -62,7 +62,7 @@ if ($global:Error.Count -gt 0) {
 
 #region Define a global __ variable.
 
-New-Variable -Name __ -Scope Global -Value $null -Description 'The output from the last command that was invoked.'
+New-Variable -Force -Name __ -Scope Global -Value $null -Description 'The output from the last command that was invoked.'
 
 #endregion
 
