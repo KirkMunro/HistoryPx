@@ -12,7 +12,9 @@ namespace HistoryPx
 {
     public class ExtendedHistoryTable
     {
-        static public int MaximumExtendedHistoryCount = 200;
+        static public int MaximumEntryCount = 200;
+        static public int MaximumItemCountPerEntry = 1000;
+        static public int Watermark = -1;
 
         static public ExtendedHistoryInfo Item(long historyId)
         {
@@ -21,10 +23,17 @@ namespace HistoryPx
 
         static private OrderedDictionary extendedHistoryTable = new OrderedDictionary();
 
-        static internal void Add(long historyId, bool commandSuccessful, Collection<PSObject> output = null, Collection<ErrorRecord> errors = null)
+        static internal void Add(long historyId, Nullable<bool> commandSuccessful, Collection<PSObject> output = null, int outputCount = 0, Collection<PSObject> error = null)
         {
-            extendedHistoryTable.Add(historyId, new ExtendedHistoryInfo(historyId, commandSuccessful, output, errors));
-            while (extendedHistoryTable.Count > MaximumExtendedHistoryCount)
+            if (!extendedHistoryTable.Contains(historyId))
+            {
+                extendedHistoryTable.Add(historyId, new ExtendedHistoryInfo(historyId, commandSuccessful, output, outputCount, error));
+            }
+            else
+            {
+                ((ExtendedHistoryInfo)extendedHistoryTable[historyId]).Update(output, outputCount, error);
+            }
+            while (extendedHistoryTable.Count > MaximumEntryCount)
             {
                 extendedHistoryTable.RemoveAt(0);
             }
@@ -54,7 +63,7 @@ namespace HistoryPx
                 // Identify which ids to remove from the extended history table
                 foreach (long historyId in extendedHistoryTable.Keys)
                 {
-                    if (historyIds.First(x => (long)x.BaseObject == historyId) != null)
+                    if (historyIds.Any(x => (long)x.BaseObject == historyId))
                     {
                         idsToRemove.Add(historyId);
                     }

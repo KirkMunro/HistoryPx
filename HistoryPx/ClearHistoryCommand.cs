@@ -12,7 +12,8 @@ namespace HistoryPx
 {
     [Cmdlet(
         VerbsCommon.Clear,
-        "History"
+        "History",
+        DefaultParameterSetName = "IDParameter"
     )]
     [OutputType(typeof(void))]
     public class ClearHistoryCommand : Microsoft.PowerShell.Commands.ClearHistoryCommand
@@ -24,7 +25,7 @@ namespace HistoryPx
 
             // Get the remaining history ids so that we can clean up the ExtendedHistoryTable
             PowerShell ps = PowerShell.Create(RunspaceMode.CurrentRunspace);
-            ps.AddScript(string.Format("@(Get-History -Count {0}).foreach('Id')", ExtendedHistoryTable.MaximumExtendedHistoryCount), false);
+            ps.AddScript(string.Format("@(Get-History -Count {0}).foreach('Id')", ExtendedHistoryTable.MaximumEntryCount), false);
             Collection<PSObject> results = ps.Invoke();
 
             // Send any errors we received to the error stream
@@ -34,13 +35,6 @@ namespace HistoryPx
                 {
                     WriteError(error);
                 }
-            }
-
-            // If no history entries were found, clear the ExtendedHistoryTable and return
-            if (results.Count == 0)
-            {
-                ExtendedHistoryTable.Clear();
-                return;
             }
 
             // Clean up the ExtendedHistoryTable
