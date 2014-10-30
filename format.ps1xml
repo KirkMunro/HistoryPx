@@ -2,9 +2,9 @@
 <Configuration>
     <ViewDefinitions>
         <View>
-            <Name>detailed</Name>
+            <Name>extended</Name>
             <ViewSelectedBy>
-                <TypeName>Microsoft.PowerShell.Commands.HistoryInfo</TypeName>
+                <TypeName>Microsoft.PowerShell.Commands.HistoryInfo#Extended</TypeName>
             </ViewSelectedBy>
             <TableControl>
                 <TableHeaders>
@@ -19,12 +19,10 @@
                         <Width>16</Width>
                     </TableColumnHeader>
                     <TableColumnHeader>
-                        <Label>Success</Label>
                         <Width>7</Width>
                     </TableColumnHeader>
                     <TableColumnHeader />
                     <TableColumnHeader>
-                        <Label>ErrorCount</Label>
                         <Alignment>Right</Alignment>
                         <Width>10</Width>
                     </TableColumnHeader>
@@ -42,17 +40,13 @@
                                 <PropertyName>Duration</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
-                                <PropertyName>CommandSuccessful</PropertyName>
+                                <PropertyName>Success</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>Output</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
-                                <ScriptBlock>
-                                    if ($_.Errors) {
-                                        $_.Errors.Count
-                                    }
-                                </ScriptBlock>
+                                <PropertyName>ErrorCount</PropertyName>
                             </TableColumnItem>
                         </TableColumnItems>
                     </TableRowEntry>

@@ -22,16 +22,75 @@ Invoke-Snippet -Name Module.Initialize
 
 #endregion
 
-#region Import public function definitions.
+#region Import helper (private) function definitions.
 
-#Invoke-Snippet -Name ScriptFile.Import -Parameters @{
-#    Path = Join-Path -Path $PSModuleRoot -ChildPath functions
-#}
+Invoke-Snippet -Name ScriptFile.Import -Parameters @{
+    Path = Join-Path -Path $PSModuleRoot -ChildPath helpers
+}
 
 #endregion
+
+#region Import public function definitions.
+
+Invoke-Snippet -Name ScriptFile.Import -Parameters @{
+    Path = Join-Path -Path $PSModuleRoot -ChildPath functions
+}
+
+#endregion
+
+<#
+Ideas:
+- when module is loaded, get current history id from MyInvocation and store it
+- if history is missing for an id greater than the one where the module was loaded, then an unhandled exception was thrown; try to identify the errors and set the success property accordingly, or set a special unhandled exception flag
+- Should status be Success, Fail, UnhandledException?
+- how to identify the unhandled exception error messages?
+#>
 
 #region Export commands defined in nested modules.
 
 . $PSModuleRoot\scripts\Export-BinaryModule.ps1
+
+#endregion
+
+#region Set the watermark to the hash code for the most recent error.
+
+if ($global:Error.Count -gt 0) {
+    [HistoryPx.ExtendedHistoryTable]::Watermark = $global:Error[0].GetHashCode()
+}
+
+#endregion
+
+#region Define the OnAvailabilityChanged event handler
+
+#$OnAvailabilityChanged = [System.EventHandler[System.Management.Automation.Runspaces.RunspaceAvailabilityEventArgs]]{
+#    param(
+#        [System.Object]
+#        $Sender,
+#
+#        [System.Management.Automation.Runspaces.RunspaceAvailabilityEventArgs]
+#        $RunspaceAvailabilityEventArgs
+#    )
+#    if (@([System.Management.Automation.Runspaces.RunspaceAvailability]::Available,[System.Management.Automation.Runspaces.RunspaceAvailability]::AvailableForNestedCommand) -contains $RunspaceAvailabilityEventArgs.RunspaceAvailability) {
+#        if ($global:Error.Count -gt 0) {
+#            [HistoryPx.ExtendedHistoryTable]::Watermark = $global:Error[0].GetHashCode()
+#        } else {
+#            [HistoryPx.ExtendedHistoryTable]::Watermark = -1
+#        }
+#    }
+#}
+
+#$Host.Runspace.add_AvailabilityChanged($OnAvailabilityChanged)
+
+#endregion
+
+#region Clean-up the module when it is removed.
+
+$PSModule.OnRemove = {
+    #region Remove the AvailabilityChanged event handler.
+
+#    $Host.Runspace.remove_AvailabilityChanged($OnAvailabilityChanged)
+
+    #endregion
+}
 
 #endregion

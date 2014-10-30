@@ -1,47 +1,30 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Types>
     <Type>
-        <Name>Microsoft.PowerShell.Commands.HistoryInfo</Name>
+        <Name>Microsoft.PowerShell.Commands.HistoryInfo#Extended</Name>
         <Members>
-            <ScriptProperty>
-                <Name>ExtendedHistoryInfo</Name>
-                <GetScriptBlock>
-                    [HistoryPx.ExtendedHistoryTable]::Item($this.Id)
-                </GetScriptBlock>
-            </ScriptProperty>
-            <ScriptProperty>
-                <Name>CommandSuccessful</Name>
-                <GetScriptBlock>
-                    if ($this.ExtendedHistoryInfo -is [HistoryPx.ExtendedHistoryInfo]) {
-                        $this.ExtendedHistoryInfo.CommandSuccessful
-                    }
-                </GetScriptBlock>
-            </ScriptProperty>
-            <ScriptProperty>
-                <Name>Output</Name>
-                <GetScriptBlock>
-                    if ($this.ExtendedHistoryInfo -is [HistoryPx.ExtendedHistoryInfo]) {
-                        $this.ExtendedHistoryInfo.Output
-                    }
-                </GetScriptBlock>
-            </ScriptProperty>
-            <ScriptProperty>
-                <Name>Errors</Name>
-                <GetScriptBlock>
-                    if ($this.ExtendedHistoryInfo -is [HistoryPx.ExtendedHistoryInfo]) {
-                        $this.ExtendedHistoryInfo.Errors
-                    }
-                </GetScriptBlock>
-            </ScriptProperty>
-            <ScriptProperty>
-                <Name>Duration</Name>
-                <GetScriptBlock>
-                    if (($this.ExecutionStatus -eq 'Completed') -and
-                        ($this.EndExecutionTime -ne $null)) {
-                        $this.EndExecutionTime - $this.StartExecutionTime
-                    }
-                </GetScriptBlock>
-            </ScriptProperty>
+            <MemberSet>
+                <Name>PSStandardMembers</Name>
+                <Members>
+                    <PropertySet>
+                        <Name>DefaultKeyPropertySet</Name>
+                        <ReferencedProperties>
+                            <Name>Id</Name>
+                        </ReferencedProperties>
+                    </PropertySet>
+                    <PropertySet>
+                        <Name>DefaultDisplayPropertySet</Name>
+                        <ReferencedProperties>
+                            <Name>Id</Name>
+                            <Name>CommandLine</Name>
+                            <Name>Duration</Name>
+                            <Name>Success</Name>
+                            <Name>Output</Name>
+                            <Name>ErrorCount</Name>
+                        </ReferencedProperties>
+                    </PropertySet>
+                </Members>
+            </MemberSet>
         </Members>
     </Type>
 </Types>

@@ -17,7 +17,7 @@ limitations under the License.
 #############################################################################>
 
 @{
-      ModuleToProcess = 'HistoryPx.dll'
+      ModuleToProcess = 'HistoryPx.psm1'
 
         ModuleVersion = '1.0.0.0'
 
@@ -33,9 +33,17 @@ limitations under the License.
 
     PowerShellVersion = '3.0'
 
+        NestedModules = @(
+                        'HistoryPx.dll'
+                        )
+
       CmdletsToExport = @(
                         'Clear-History'
                         'Out-Default'
+                        )
+
+    FunctionsToExport = @(
+                        'Get-History'
                         )
 
        TypesToProcess = @(
@@ -50,10 +58,16 @@ limitations under the License.
                         'format.ps1xml'
                         'HistoryPx.dll'
                         'HistoryPx.psd1'
+                        'HistoryPx.psm1'
                         'LICENSE'
                         'NOTICE'
                         'types.ps1xml'
                         'en-us\HistoryPx.dll-Help.xml'
+                        'functions\Get-ExtendedHistoryConfiguration.ps1'
+                        'functions\Get-History.ps1'
+                        'functions\Set-ExtendedHistoryConfiguration.ps1'
+                        'helpers\Add-ExtendedHistoryInfo.ps1'
+                        'scripts\Export-BinaryModule.ps1'
                         'scripts\Install-HistoryPxModule.ps1'
                         'scripts\Uninstall-HistoryPxModule.ps1'
                         )
