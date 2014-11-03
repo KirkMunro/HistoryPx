@@ -16,16 +16,17 @@
                         <Width>30</Width>
                     </TableColumnHeader>
                     <TableColumnHeader>
-                        <Width>16</Width>
+                        <Label>Duration</Label>
+                        <Width>14</Width>
                     </TableColumnHeader>
                     <TableColumnHeader>
                         <Width>7</Width>
                     </TableColumnHeader>
-                    <TableColumnHeader />
                     <TableColumnHeader>
-                        <Alignment>Right</Alignment>
-                        <Width>10</Width>
+                        <Label>#Errors</Label>
+                        <Width>7</Width>
                     </TableColumnHeader>
+                    <TableColumnHeader />
                 </TableHeaders>
                 <TableRowEntries>
                     <TableRowEntry>
@@ -37,16 +38,30 @@
                                 <PropertyName>CommandLine</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
-                                <PropertyName>Duration</PropertyName>
+                                <ScriptBlock>
+                                    if ($_.Duration.TotalDays -gt 1) {
+                                        $_.Duration.ToString('d\.hh\:mm\:ss\.fff')
+                                    } else {
+                                        $_.Duration.ToString('hh\:mm\:ss\.fff')
+                                    }
+                                </ScriptBlock>
                             </TableColumnItem>
                             <TableColumnItem>
                                 <PropertyName>Success</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
-                                <PropertyName>Output</PropertyName>
+                                <ScriptBlock>
+                                    if ($_.ErrorCount -ne $null) {
+                                        if ($_.ExecutionStatus -eq [System.Management.Automation.Runspaces.PipelineState]::Failed) {
+                                            "$($_.ErrorCount) !"
+                                        } else {
+                                            $_.ErrorCount
+                                        }
+                                    }
+                                </ScriptBlock>
                             </TableColumnItem>
                             <TableColumnItem>
-                                <PropertyName>ErrorCount</PropertyName>
+                                <PropertyName>Output</PropertyName>
                             </TableColumnItem>
                         </TableColumnItems>
                     </TableRowEntry>
