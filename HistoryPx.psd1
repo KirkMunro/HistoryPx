@@ -27,7 +27,7 @@ limitations under the License.
 @{
       ModuleToProcess = 'HistoryPx.psm1'
 
-        ModuleVersion = '1.0.0.3'
+        ModuleVersion = '1.0.0.4'
 
                  GUID = '1ceaf4bf-dc01-4790-a06d-c8224daa7027'
 
@@ -41,12 +41,9 @@ limitations under the License.
 
     PowerShellVersion = '3.0'
 
-      RequiredModules = @(
-                        'SnippetPx'
-                        )
-
         NestedModules = @(
                         'HistoryPx.dll'
+                        'SnippetPx'
                         )
 
       CmdletsToExport = @(
