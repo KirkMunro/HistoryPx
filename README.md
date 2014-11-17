@@ -68,10 +68,10 @@ unless you want it to take longer), and invoke one of the following commands:
 ```powershell
 # If you want to install HistoryPx for all users or update a version already installed
 # (recommended, requires elevation for new install for all users)
-& ([scriptblock]::Create((iwr -uri http://tinyurl.com/Install-ModuleFromGitHub).Content)) -ModuleName HistoryPx,SnippetPx
+& ([scriptblock]::Create((iwr -uri http://tinyurl.com/Install-GitHubHostedModule).Content)) -ModuleName HistoryPx,SnippetPx
 
 # If you want to install HistoryPx for the current user
-& ([scriptblock]::Create((iwr -uri http://tinyurl.com/Install-ModuleFromGitHub).Content)) -ModuleName HistoryPx,SnippetPx -Scope CurrentUser
+& ([scriptblock]::Create((iwr -uri http://tinyurl.com/Install-GitHubHostedModule).Content)) -ModuleName HistoryPx,SnippetPx -Scope CurrentUser
 ```
 
 ### Loading the HistoryPx module

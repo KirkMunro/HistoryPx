@@ -27,7 +27,7 @@ limitations under the License.
 @{
       ModuleToProcess = 'HistoryPx.psm1'
 
-        ModuleVersion = '1.0.0.4'
+        ModuleVersion = '1.0.0.5'
 
                  GUID = '1ceaf4bf-dc01-4790-a06d-c8224daa7027'
 
@@ -78,8 +78,6 @@ limitations under the License.
                         'functions\Set-ExtendedHistoryConfiguration.ps1'
                         'helpers\Add-ExtendedHistoryInfo.ps1'
                         'scripts\Export-BinaryModule.ps1'
-                        'scripts\Install-HistoryPxModule.ps1'
-                        'scripts\Uninstall-HistoryPxModule.ps1'
                         )
 
           PrivateData = @{
