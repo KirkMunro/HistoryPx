@@ -96,6 +96,7 @@ example, once the module is loaded and after you have invoked several commands,
 you can display history information by invoking Get-History. With HistoryPx
 loaded, this will show you output similar to the following:
 
+'''
   Id CommandLine              Duration       Success #Errors Output
   -- -----------              --------       ------- ------- ------
    1 ipmo HistoryPx           00:00:00.264   True
@@ -103,6 +104,7 @@ loaded, this will show you output similar to the following:
    3 Get-Process              00:00:00.877   True            {System.Diagn...
    4 function Test-Throw {... 00:00:00.000   True
    5 Test-Throw               00:00:00.003   False   1 !
+'''
 
 This output provides you with much richer historical information, including the
 command duration, a flag indicating whether the command was successful or not
