@@ -25,6 +25,12 @@
                     </PropertySet>
                 </Members>
             </MemberSet>
+            <ScriptProperty>
+                <Name>OutputTruncated</Name>
+                <GetScriptBlock>
+                    $this.OutputCount -gt $this.Output.Count
+                </GetScriptBlock>
+            </ScriptProperty>
         </Members>
     </Type>
 </Types>
