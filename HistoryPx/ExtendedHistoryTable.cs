@@ -12,6 +12,7 @@ namespace HistoryPx
 {
     public class ExtendedHistoryTable
     {
+        static internal bool OnRemove = false;
         static public int MaximumEntryCount = 200;
         static public int MaximumItemCountPerEntry = 1000;
         static public int Watermark = -1;
@@ -22,10 +23,12 @@ namespace HistoryPx
             return (ExtendedHistoryInfo)extendedHistoryTable[(object)historyId];
         }
 
-        static public void Clear()
+        static public void Clear(bool onRemove = false)
         {
             // Clear all entries
             extendedHistoryTable.Clear();
+            // Update our OnRemove flag
+            OnRemove = onRemove;
         }
 
         static private OrderedDictionary extendedHistoryTable = new OrderedDictionary();

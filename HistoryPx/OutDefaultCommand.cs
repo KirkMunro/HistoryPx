@@ -332,8 +332,16 @@ namespace HistoryPx
                 commandSucceeded = true;
             }
 
-            // Add a detailed history entry to the detailed history table
-            ExtendedHistoryTable.Add(historyId, commandSucceeded, historicalOutput, outputCount, commandErrors);
+            // If we just removed the module, reset the OnRemove flag; otherwise, add a
+            // detailed history entry to the detailed history table
+            if (ExtendedHistoryTable.OnRemove)
+            {
+                ExtendedHistoryTable.OnRemove = false;
+            }
+            else
+            {
+                ExtendedHistoryTable.Add(historyId, commandSucceeded, historicalOutput, outputCount, commandErrors);
+            }
 
             // Let the base class do its work
             base.EndProcessing();
