@@ -27,7 +27,7 @@ limitations under the License.
 @{
       ModuleToProcess = 'HistoryPx.psm1'
 
-        ModuleVersion = '1.0.0.7'
+        ModuleVersion = '1.0.0.8'
 
                  GUID = '1ceaf4bf-dc01-4790-a06d-c8224daa7027'
 
@@ -48,13 +48,13 @@ limitations under the License.
 
       CmdletsToExport = @(
                         'Clear-History'
+                        'Get-History'
                         'Out-Default'
                         )
 
     FunctionsToExport = @(
                         'Get-CaptureOutputConfiguration'
                         'Get-ExtendedHistoryConfiguration'
-                        'Get-History'
                         'Set-CaptureOutputConfiguration'
                         'Set-ExtendedHistoryConfiguration'
                         )
@@ -77,10 +77,8 @@ limitations under the License.
                         'types.ps1xml'
                         'functions\Get-CaptureOutputConfiguration.ps1'
                         'functions\Get-ExtendedHistoryConfiguration.ps1'
-                        'functions\Get-History.ps1'
                         'functions\Get-CaptureOutputConfiguration.ps1'
                         'functions\Set-ExtendedHistoryConfiguration.ps1'
-                        'helpers\Add-ExtendedHistoryInfo.ps1'
                         'scripts\Export-BinaryModule.ps1'
                         )
 

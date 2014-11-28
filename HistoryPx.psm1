@@ -30,14 +30,6 @@ Invoke-Snippet -Name Module.Initialize
 
 #endregion
 
-#region Import helper (private) function definitions.
-
-Invoke-Snippet -Name ScriptFile.Import -Parameters @{
-    Path = Join-Path -Path $PSModuleRoot -ChildPath helpers
-}
-
-#endregion
-
 #region Import public function definitions.
 
 Invoke-Snippet -Name ScriptFile.Import -Parameters @{
@@ -65,7 +57,7 @@ if ($global:Error.Count -gt 0) {
 $PSModule.OnRemove = {
     #region Clear the extended history table contents.
 
-    [HistoryPx.ExtendedHistoryTable]::Clear()
+    [HistoryPx.ExtendedHistoryTable]::Clear($true)
 
     #endregion
 
