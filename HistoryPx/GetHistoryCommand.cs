@@ -33,18 +33,7 @@ namespace HistoryPx
                 ps.AddParameter(parameterName, MyInvocation.BoundParameters[parameterName]);
             }
 
-            //// Look up the GetSteppablePipeline internal method
-            //MethodInfo getSteppablePipelineMethod = typeof(PowerShell).GetMethod("GetSteppablePipeline", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
-            //if (getSteppablePipelineMethod == null)
-            //{
-            //    string message = "Failed to find internal GetSteppablePipeline method. Please contact one of the authors of HistoryPx.";
-            //    MethodAccessException exception = new MethodAccessException(message);
-            //    ErrorRecord errorRecord = new ErrorRecord(exception, exception.GetType().FullName, ErrorCategory.ResourceUnavailable, ps);
-            //    ThrowTerminatingError(errorRecord);
-            //}
-            //
-            //// Invoke the steppable pipeline
-            //steppablePipeline = (SteppablePipeline)getSteppablePipelineMethod.Invoke(ps, null);
+            // Invoke the steppable pipeline
             steppablePipeline = ps.GetSteppablePipeline(this);
             steppablePipeline.Begin(false);
         }
