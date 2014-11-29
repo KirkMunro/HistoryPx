@@ -44,7 +44,7 @@ namespace HistoryPx
             historyId = MyInvocation.HistoryId;
 
             // Get the pipeline for the current command
-            pipelineAst = RunspaceInternals.GetCurrentPipelineAst();
+            pipelineAst = Runspace.DefaultRunspace.GetCurrentPipelineAst();
 
             // Let the base class do its work
             base.BeginProcessing();
