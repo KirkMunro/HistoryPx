@@ -148,20 +148,13 @@ namespace HistoryPx
             // If something was output, calculate the actual number of items output
             int outputCount = historicalOutput.Count + removedHistoryInfoCount + removedObjectCount;
 
-            // Add warnings if appropriate
+            // Add a warning if appropriate
             if (removedHistoryInfoCount > 0)
             {
                 PSObject warningRecord = new PSObject(new WarningRecord(string.Format("<Omitting {0} history information objects>", removedHistoryInfoCount)));
                 warningRecord.Properties.Add(new PSNoteProperty(writeWarningStream, true));
                 historicalOutput.Insert(0, warningRecord);
             }
-            // Commenting this out; if you want to work with the output, you shouldn't have a warning in the collection to muck things up.
-            //if (removedObjectCount > 0)
-            //{
-            //    PSObject warningRecord = new PSObject(new WarningRecord(string.Format("<Truncated: {0} objects returned, {1} objects removed>", outputCount, removedObjectCount)));
-            //    warningRecord.Properties.Add(new PSNoteProperty(writeWarningStream, true));
-            //    historicalOutput.Insert(0, warningRecord);
-            //}
 
             // Update the last output collection in the last captured output variable, allowing for HistoryInfo objects
             // to be returned as part of that collection, but only when:
