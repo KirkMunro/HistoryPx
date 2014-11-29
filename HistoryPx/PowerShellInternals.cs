@@ -21,7 +21,7 @@ namespace HistoryPx
             MethodInfo getSteppablePipelineMethod = typeof(PowerShell).GetMethod("GetSteppablePipeline", BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
             if (getSteppablePipelineMethod == null)
             {
-                string message = "Failed to find internal GetSteppablePipeline method. Please contact one of the authors of HistoryPx.";
+                string message = string.Format("Failed to find internal GetSteppablePipeline method. Please contact one of the authors of {0}.", psCmdlet.SessionState.Module.Name);
                 MethodAccessException exception = new MethodAccessException(message);
                 ErrorRecord errorRecord = new ErrorRecord(exception, exception.GetType().FullName, ErrorCategory.ResourceUnavailable, ps);
                 psCmdlet.ThrowTerminatingError(errorRecord);
