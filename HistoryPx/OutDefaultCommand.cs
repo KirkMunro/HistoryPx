@@ -15,11 +15,14 @@ namespace HistoryPx
 {
     [Cmdlet(
         VerbsData.Out,
-        "Default"
+        "Default",
+        HelpUri = "http://go.microsoft.com/fwlink/p/?linkid=289600"
     )]
     [OutputType(typeof(void))]
     public class OutDefaultCommand : Microsoft.PowerShell.Commands.OutDefaultCommand
     {
+        ProxyCmdletHelper outDefaultProxyHelper = null;
+
         private static string writeErrorStream = "writeErrorStream";
         private static string writeWarningStream = "writeWarningStream";
 
@@ -46,8 +49,9 @@ namespace HistoryPx
             // Get the pipeline for the current command
             pipelineAst = Runspace.DefaultRunspace.GetCurrentPipelineAst();
 
-            // Let the base class do its work
-            base.BeginProcessing();
+            // Let the proxy target do its work
+            outDefaultProxyHelper = new ProxyCmdletHelper(this);
+            outDefaultProxyHelper.Begin(true);
         }
 
         protected override void ProcessRecord()
@@ -128,8 +132,8 @@ namespace HistoryPx
                 }
             }
 
-            // Let the base class do its work
-            base.ProcessRecord();
+            // Let the proxy target do its work
+            outDefaultProxyHelper.Process(InputObject);
         }
 
         protected override void EndProcessing()
@@ -336,8 +340,8 @@ namespace HistoryPx
                 ExtendedHistoryTable.Add(historyId, commandSucceeded, historicalOutput, outputCount, commandErrors);
             }
 
-            // Let the base class do its work
-            base.EndProcessing();
+            // Let the proxy target do its work
+            outDefaultProxyHelper.End();
         }
     }
 }
