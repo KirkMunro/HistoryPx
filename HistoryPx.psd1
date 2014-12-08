@@ -75,6 +75,7 @@ limitations under the License.
                         'LICENSE'
                         'NOTICE'
                         'types.ps1xml'
+                        'en-us\HistoryPx.dll-Help.xml'
                         'functions\Get-CaptureOutputConfiguration.ps1'
                         'functions\Get-ExtendedHistoryConfiguration.ps1'
                         'functions\Get-CaptureOutputConfiguration.ps1'
