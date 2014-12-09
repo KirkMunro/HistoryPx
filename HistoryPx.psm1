@@ -30,14 +30,6 @@ Invoke-Snippet -Name Module.Initialize
 
 #endregion
 
-#region Import helper (private) function definitions.
-
-Invoke-Snippet -Name ScriptFile.Import -Parameters @{
-    Path = Join-Path -Path $PSModuleRoot -ChildPath helpers
-}
-
-#endregion
-
 #region Import public function definitions.
 
 Invoke-Snippet -Name ScriptFile.Import -Parameters @{
@@ -65,7 +57,7 @@ if ($global:Error.Count -gt 0) {
 $PSModule.OnRemove = {
     #region Clear the extended history table contents.
 
-    [HistoryPx.ExtendedHistoryTable]::Clear()
+    [HistoryPx.ExtendedHistoryTable]::Clear($true)
 
     #endregion
 
@@ -80,8 +72,8 @@ $PSModule.OnRemove = {
 # SIG # Begin signature block
 # MIIZIAYJKoZIhvcNAQcCoIIZETCCGQ0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU/T2RuAATIVC+HkD0KFGK5HP+
-# wFKgghRWMIID7jCCA1egAwIBAgIQfpPr+3zGTlnqS5p31Ab8OzANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUaI3VQdvgaLu6pr6oidPc2XzS
+# 3yGgghRWMIID7jCCA1egAwIBAgIQfpPr+3zGTlnqS5p31Ab8OzANBgkqhkiG9w0B
 # AQUFADCBizELMAkGA1UEBhMCWkExFTATBgNVBAgTDFdlc3Rlcm4gQ2FwZTEUMBIG
 # A1UEBxMLRHVyYmFudmlsbGUxDzANBgNVBAoTBlRoYXd0ZTEdMBsGA1UECxMUVGhh
 # d3RlIENlcnRpZmljYXRpb24xHzAdBgNVBAMTFlRoYXd0ZSBUaW1lc3RhbXBpbmcg
@@ -194,23 +186,23 @@ $PSModule.OnRemove = {
 # aWdpY2VydC5jb20xLjAsBgNVBAMTJURpZ2lDZXJ0IEFzc3VyZWQgSUQgQ29kZSBT
 # aWduaW5nIENBLTECEA3/99JYTi+N6amVWfXCcCMwCQYFKw4DAhoFAKB4MBgGCisG
 # AQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcNAQkDMQwGCisGAQQBgjcCAQQw
-# HAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFJpm
-# AdhKY7otHx/0ztJtv0G85x4EMA0GCSqGSIb3DQEBAQUABIIBABaNVOgobT/f5QUT
-# qYT+t9WJ/Eh+PpMrWsap2Icy6LPhApBUV48j81+PHocOW80S7NSjgAtOb7yKZByM
-# zshu0cGrDp58wA/ppzgKGTZK8L4Skt+arElw/6GWZmbeXHp/YEBmivH0M042Xw3d
-# 9vxTE/kUWE9IkszFzfD6h/uK3oFrR1Gzp0/zhpuSM7gxYPqgXAeVBT+hI8mgpt1W
-# IuSOpct255xoDfIg5Bx2GtH1ODvbwguzX+bf7LgwZ0tqQwHHF/jAhCNhlmX7eVws
-# L5ASR82Edjhn5XTsEVhV+6ik8LtJC/c04BMpppCyYJDf2Mn6CriQEJVz3R+oe5wR
-# Okopvp+hggILMIICBwYJKoZIhvcNAQkGMYIB+DCCAfQCAQEwcjBeMQswCQYDVQQG
+# HAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFAqP
+# 5i7wqBHhHHOIIQEeAt+bQe8qMA0GCSqGSIb3DQEBAQUABIIBAICKzQ6AWcMR8UkV
+# 7LrzAFLvSUv6HrV1WjyHRIMRdoHM0QXLqfTXVfnnFuELo42fcE0FMiDGQd0Q0c2O
+# 8iJx2AJ/zIsx7C7SqK43W4LtBnnY4Ah0DGXydOuDrHn9Y4jAa9VJynOiGMaagQ7D
+# nCs412L2KO6zYfpz09Vzz5HMZ745xGwsmMNhXDCvbr8QwocFuYq68HYP7lklo+HA
+# emA0N45hrHlQIvzhn8kIdxWkwnMz4fjXecd+ywmu+nS6YyHrZXgg3Cre9ygbUC0Z
+# RELYIEb3v2X6qcGh+XGT3W8q9DAWGnV+hN7lHSfewXS7whdlKDt6stzMn4xuZdRI
+# 8+LZM/yhggILMIICBwYJKoZIhvcNAQkGMYIB+DCCAfQCAQEwcjBeMQswCQYDVQQG
 # EwJVUzEdMBsGA1UEChMUU3ltYW50ZWMgQ29ycG9yYXRpb24xMDAuBgNVBAMTJ1N5
 # bWFudGVjIFRpbWUgU3RhbXBpbmcgU2VydmljZXMgQ0EgLSBHMgIQDs/0OMj+vzVu
 # BNhqmBsaUDAJBgUrDgMCGgUAoF0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAc
-# BgkqhkiG9w0BCQUxDxcNMTQxMTI2MjEyMTQwWjAjBgkqhkiG9w0BCQQxFgQUxhzX
-# nn+Men5+euM111GF1wBgpBAwDQYJKoZIhvcNAQEBBQAEggEAkMDaVPjKQYpsCyLo
-# mEDPJJVeGack8XV4so4FGNdAc9dtH7tzYn5/gwlpl+EBYZJDfsmqFPbQBtrvk4mO
-# kdVk5YvgShR1wFnhhIXOpSUXQCTKJrMyyzkja61juBoG2hR5tIvgsxxbqCg3iUbT
-# hClSHrhedDFkiWNUN3wKu30s9njbXkWdZwZbGj+a7UD3pHAF+rcs/4XsDQPHDBNJ
-# wpBzMShyO59s7CzuV9uo9a2oaCC895dCzB5bWAvRP+qhqTx890uhmtCEEc/WF3E9
-# pFR8DZd+SXJJICmwj9UCWMFUjNXCJYIXGsBm3+ZEAMgq5zSeS9q0fPtIkkYeeL4k
-# ozL0tA==
+# BgkqhkiG9w0BCQUxDxcNMTQxMjA5MjM1NDAwWjAjBgkqhkiG9w0BCQQxFgQUD3B4
+# KXllXQmbkWrH8pqloujLQdIwDQYJKoZIhvcNAQEBBQAEggEAbdr8wWsexSJZb3R3
+# Po8NPEe/PXZSVMtEaF7r830z7dwhAJYRhfVyDlgwalLVgy/Nae9ImW8/GamWUGpr
+# gm5QikssuBEZrsDY+3tTqF5WBHWuzuUBzzsA9Au5OwB7n1Ud9Tc9SxHv1V0xukNY
+# 6OuQD0EGtAer3erddGi8cQH9m4+nlNpVGZCZ1QOWScs/pTPtpvRXlRp4S2rWnh4S
+# P1DGjG8htwhyNTLvhRoDc99TeUvV0gj6Kq1poWeaplV2Tk6EemXg0ZV7x0dx9Y43
+# jJ0EIb0qs/n4GbuSI9g0sCP6/PbCe+r19IMsfZU3+rvF1NzHxiF5yqiT1yDL+fxe
+# xfYDTQ==
 # SIG # End signature block
