@@ -9,7 +9,7 @@ may have wanted to capture, and includes commands to configure how it decides
 when output should be captured.  Lastly, HistoryPx includes commands to manage
 the memory footprint that is used by extended history information.
 
-Copyright 2014 Kirk Munro
+Copyright 2015 Kirk Munro
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -24,56 +24,75 @@ See the License for the specific language governing permissions and
 limitations under the License.
 #############################################################################>
 
-#region Initialize the module.
+try {
+    #region Initialize the module.
 
-Invoke-Snippet -Name Module.Initialize
+    Invoke-Snippet -Name Module.Initialize
 
-#endregion
+    #endregion
 
-#region Import public function definitions.
+    #region Import public function definitions.
 
-Invoke-Snippet -Name ScriptFile.Import -Parameters @{
-    Path = Join-Path -Path $PSModuleRoot -ChildPath functions
+    Invoke-Snippet -Name ScriptFile.Import -Parameters @{
+        Path = Join-Path -Path $PSModuleRoot -ChildPath functions
+    }
+
+    #endregion
+
+    #region Export commands defined in nested modules.
+
+    . $PSModuleRoot\scripts\Export-BinaryModule.ps1
+
+    #endregion
+
+    #region Set the watermark to the hash code for the most recent error.
+
+    if ($global:Error.Count -gt 0) {
+        [HistoryPx.ExtendedHistoryTable]::Watermark = $global:Error[0].GetHashCode()
+    }
+
+    #endregion
+
+    #region Generate a warning if the output configuration variable is already configured.
+
+    $parentDefaultParameterValues = Get-Variable -Name PSDefaultParameterValues -Scope 1 -ValueOnly
+    if ($parentDefaultParameterValues.ContainsKey('Out-Default:OutVariable') -and
+        ($parentDefaultParameterValues['Out-Default:OutVariable'] -eq [HistoryPx.CaptureOutputConfiguration]::VariableName)) {
+        Write-Warning "$([HistoryPx.CaptureOutputConfiguration]::VariableName) is currently configured as the default OutVariable parameter for Out-Default. This configuration should be removed from PSDefaultParameterValues."
+    }
+
+    #endregion
+} catch {
+    throw
 }
-
-#endregion
-
-#region Export commands defined in nested modules.
-
-. $PSModuleRoot\scripts\Export-BinaryModule.ps1
-
-#endregion
-
-#region Set the watermark to the hash code for the most recent error.
-
-if ($global:Error.Count -gt 0) {
-    [HistoryPx.ExtendedHistoryTable]::Watermark = $global:Error[0].GetHashCode()
-}
-
-#endregion
 
 #region Clean-up the module when it is removed.
 
 $PSModule.OnRemove = {
-    #region Clear the extended history table contents.
+    try {
+        #region Clear the extended history table contents.
 
-    [HistoryPx.ExtendedHistoryTable]::Clear($true)
+        [HistoryPx.ExtendedHistoryTable]::Clear($true)
 
-    #endregion
+        #endregion
 
-    #region Remove the global last captured output variable.
+        #region Remove the global last captured output variable.
 
-    Remove-Variable -Name ([HistoryPx.CaptureOutputConfiguration]::VariableName) -Scope Global -Force -ErrorAction Ignore
+        Remove-Variable -Name ([HistoryPx.CaptureOutputConfiguration]::VariableName) -Scope Global -Force -ErrorAction Ignore
 
-    #endregion
+        #endregion
+    } catch {
+        throw
+    }
 }
 
 #endregion
+
 # SIG # Begin signature block
 # MIIZIAYJKoZIhvcNAQcCoIIZETCCGQ0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUaI3VQdvgaLu6pr6oidPc2XzS
-# 3yGgghRWMIID7jCCA1egAwIBAgIQfpPr+3zGTlnqS5p31Ab8OzANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUwsEkrWjQ0MqceBPvTu/NUY4p
+# qaegghRWMIID7jCCA1egAwIBAgIQfpPr+3zGTlnqS5p31Ab8OzANBgkqhkiG9w0B
 # AQUFADCBizELMAkGA1UEBhMCWkExFTATBgNVBAgTDFdlc3Rlcm4gQ2FwZTEUMBIG
 # A1UEBxMLRHVyYmFudmlsbGUxDzANBgNVBAoTBlRoYXd0ZTEdMBsGA1UECxMUVGhh
 # d3RlIENlcnRpZmljYXRpb24xHzAdBgNVBAMTFlRoYXd0ZSBUaW1lc3RhbXBpbmcg
@@ -186,23 +205,23 @@ $PSModule.OnRemove = {
 # aWdpY2VydC5jb20xLjAsBgNVBAMTJURpZ2lDZXJ0IEFzc3VyZWQgSUQgQ29kZSBT
 # aWduaW5nIENBLTECEA3/99JYTi+N6amVWfXCcCMwCQYFKw4DAhoFAKB4MBgGCisG
 # AQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcNAQkDMQwGCisGAQQBgjcCAQQw
-# HAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFAqP
-# 5i7wqBHhHHOIIQEeAt+bQe8qMA0GCSqGSIb3DQEBAQUABIIBAICKzQ6AWcMR8UkV
-# 7LrzAFLvSUv6HrV1WjyHRIMRdoHM0QXLqfTXVfnnFuELo42fcE0FMiDGQd0Q0c2O
-# 8iJx2AJ/zIsx7C7SqK43W4LtBnnY4Ah0DGXydOuDrHn9Y4jAa9VJynOiGMaagQ7D
-# nCs412L2KO6zYfpz09Vzz5HMZ745xGwsmMNhXDCvbr8QwocFuYq68HYP7lklo+HA
-# emA0N45hrHlQIvzhn8kIdxWkwnMz4fjXecd+ywmu+nS6YyHrZXgg3Cre9ygbUC0Z
-# RELYIEb3v2X6qcGh+XGT3W8q9DAWGnV+hN7lHSfewXS7whdlKDt6stzMn4xuZdRI
-# 8+LZM/yhggILMIICBwYJKoZIhvcNAQkGMYIB+DCCAfQCAQEwcjBeMQswCQYDVQQG
+# HAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFImO
+# FNCihM3JKelldZLWLo2ZXwTEMA0GCSqGSIb3DQEBAQUABIIBAB19mUO3MCeT1xMu
+# YszcpVBXrSsdrAYB5ZaRyW/AormLZ5aqTse8rMGY1z7cILIp1tq2oPfcsUugVDM6
+# DXhrqkIrFGAWLAiC17UyUkhd5cldad2QRagzUl+JRz3N1kdfT6W1F2Nw04tnWiYR
+# Td92dnuCU1djsmvhxmtwQLLgr5MJvtqUeNQ4qbUCAwc1ox0Q5BKl8lhp60QXhvFN
+# 8YIxijTx6iYnnRER1jX/qMqlUjOEEm8/S4g0qkKSM86U75iv/8wqSBnWCjAWbkSt
+# KI4BYbCX6WqAOe0VgNo9+PSYZeSTWzYvtovYuMA6s/q4IKPxAoYhrASWGrt5oG+z
+# BBGPEUChggILMIICBwYJKoZIhvcNAQkGMYIB+DCCAfQCAQEwcjBeMQswCQYDVQQG
 # EwJVUzEdMBsGA1UEChMUU3ltYW50ZWMgQ29ycG9yYXRpb24xMDAuBgNVBAMTJ1N5
 # bWFudGVjIFRpbWUgU3RhbXBpbmcgU2VydmljZXMgQ0EgLSBHMgIQDs/0OMj+vzVu
 # BNhqmBsaUDAJBgUrDgMCGgUAoF0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAc
-# BgkqhkiG9w0BCQUxDxcNMTQxMjA5MjM1NDAwWjAjBgkqhkiG9w0BCQQxFgQUD3B4
-# KXllXQmbkWrH8pqloujLQdIwDQYJKoZIhvcNAQEBBQAEggEAbdr8wWsexSJZb3R3
-# Po8NPEe/PXZSVMtEaF7r830z7dwhAJYRhfVyDlgwalLVgy/Nae9ImW8/GamWUGpr
-# gm5QikssuBEZrsDY+3tTqF5WBHWuzuUBzzsA9Au5OwB7n1Ud9Tc9SxHv1V0xukNY
-# 6OuQD0EGtAer3erddGi8cQH9m4+nlNpVGZCZ1QOWScs/pTPtpvRXlRp4S2rWnh4S
-# P1DGjG8htwhyNTLvhRoDc99TeUvV0gj6Kq1poWeaplV2Tk6EemXg0ZV7x0dx9Y43
-# jJ0EIb0qs/n4GbuSI9g0sCP6/PbCe+r19IMsfZU3+rvF1NzHxiF5yqiT1yDL+fxe
-# xfYDTQ==
+# BgkqhkiG9w0BCQUxDxcNMTUwNDIzMDA1MDAyWjAjBgkqhkiG9w0BCQQxFgQUUcal
+# orq9YGpOAjjtOO+fqbNGP4EwDQYJKoZIhvcNAQEBBQAEggEADzwNvvO0ovezk/ts
+# kbgrPlBzzhoGtshRKBdyVN/r7NZWR6uMlkmcq0pcDNQoHgJnB9I54rAx7BBrSqJp
+# k64OxVCJSdayD2jhyNjSQxgpOxpbahl+WJ+yyjyWjlu2g3ne8tDTi4d/9vLaGL1C
+# lsmy4uvh/4W1D1P/4RVDg+ShKY1BYLzQwmI9teyW1DKK9LVeVdmLiws+8Q3JYWJS
+# ien391wpA2ST9MSDMcnBCrUunQDFOOFl30z2cRai/olh0+MYHn6bsAYEf5oMn18H
+# 2Uw0cpOXKg8wuBiW54EpFVV3ir0W+SnkySx8MBaHkAEm8rubUqP8ZaoAXUovaz1m
+# cdTaOw==
 # SIG # End signature block

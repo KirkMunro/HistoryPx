@@ -9,7 +9,7 @@ may have wanted to capture, and includes commands to configure how it decides
 when output should be captured.  Lastly, HistoryPx includes commands to manage
 the memory footprint that is used by extended history information.
 
-Copyright 2014 Kirk Munro
+Copyright 2015 Kirk Munro
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -85,8 +85,8 @@ Export-ModuleMember -Function Get-CaptureOutputConfiguration
 # SIG # Begin signature block
 # MIIZIAYJKoZIhvcNAQcCoIIZETCCGQ0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUyrwKcJkm9sbpdiDYKLTXo50C
-# CW+gghRWMIID7jCCA1egAwIBAgIQfpPr+3zGTlnqS5p31Ab8OzANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUxFeHBDn386mwMhqId6dozAH/
+# 1+agghRWMIID7jCCA1egAwIBAgIQfpPr+3zGTlnqS5p31Ab8OzANBgkqhkiG9w0B
 # AQUFADCBizELMAkGA1UEBhMCWkExFTATBgNVBAgTDFdlc3Rlcm4gQ2FwZTEUMBIG
 # A1UEBxMLRHVyYmFudmlsbGUxDzANBgNVBAoTBlRoYXd0ZTEdMBsGA1UECxMUVGhh
 # d3RlIENlcnRpZmljYXRpb24xHzAdBgNVBAMTFlRoYXd0ZSBUaW1lc3RhbXBpbmcg
@@ -199,23 +199,23 @@ Export-ModuleMember -Function Get-CaptureOutputConfiguration
 # aWdpY2VydC5jb20xLjAsBgNVBAMTJURpZ2lDZXJ0IEFzc3VyZWQgSUQgQ29kZSBT
 # aWduaW5nIENBLTECEA3/99JYTi+N6amVWfXCcCMwCQYFKw4DAhoFAKB4MBgGCisG
 # AQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcNAQkDMQwGCisGAQQBgjcCAQQw
-# HAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFA8j
-# JLYa4tmMxRKXybiXLPl8VgcYMA0GCSqGSIb3DQEBAQUABIIBAG7EdWAzE46VtFHa
-# xN1/7Amidb1XUqoZjeJJN7ru4wEKkOYXK1qRbG91i0SP5XXrwyWt3IGwy32HfN3w
-# wU4y3fj3orisuSWWr3bMDecK9JlJfB68UhNrbRUBZMEbd4j45hOTFJG5GtuVtnqX
-# 90z3AwY5j1y1105f4tC7He/kghvheiZ1jlJ+nztWUs0EpyxXesHbCOrvKpK/YbL+
-# MEDx+LzL5LlU+P892m4fcvSI8h89nRmRW2YrNq5XMMJ8zrfaWrSbyr2k/P1Ddu+D
-# xbz3Y+kB12WDmICtVTFOzWZxzDKEVWqotALQZN7W2U5E9Hlj3VqvZ4u4yAlQ0ObW
-# 3MOOKmehggILMIICBwYJKoZIhvcNAQkGMYIB+DCCAfQCAQEwcjBeMQswCQYDVQQG
+# HAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFIUB
+# vovOzMHzrWo4e+MnoLbf0xV4MA0GCSqGSIb3DQEBAQUABIIBAIFO5erTyZ96uRhO
+# hqG4LQ+yekp9ebXn3mlY/dl2DWbexwlE+f8fjw4Ld/XZp5x9fAlGDXkdXEewQq4i
+# sgbuOUVONOx9vTkZE0LVDxvM3FYbMeNJ1W4aNrJp+DdVenFNpPSouLpcvvgpyYes
+# tmO+KzzDgXGk4W6jnW9NJXx8XyoUODZPDk7s4mRxsnSe9HcZcg5V++VFhF/Srnn2
+# eK/EOgandSuqSmV8d8RWn2ELh8qmMcJYAN8ndSf4SXUGZobC+DH9lOR8P2y2b8KA
+# +8S/HgfvoBgNHrCovjSb8XwX+4Ltt5OYBgW4rXi0NlgT9BvuWeorWBiWyxdJicSI
+# ASSn6xWhggILMIICBwYJKoZIhvcNAQkGMYIB+DCCAfQCAQEwcjBeMQswCQYDVQQG
 # EwJVUzEdMBsGA1UEChMUU3ltYW50ZWMgQ29ycG9yYXRpb24xMDAuBgNVBAMTJ1N5
 # bWFudGVjIFRpbWUgU3RhbXBpbmcgU2VydmljZXMgQ0EgLSBHMgIQDs/0OMj+vzVu
 # BNhqmBsaUDAJBgUrDgMCGgUAoF0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAc
-# BgkqhkiG9w0BCQUxDxcNMTQxMjA5MjM1NDAwWjAjBgkqhkiG9w0BCQQxFgQUFB4E
-# 9rLhektCu2+uGbzboZXqUqswDQYJKoZIhvcNAQEBBQAEggEABxbspIXiID+zIPB/
-# hki2znb73oVibK73do9y/jc0FtWqRUoe7afSNZBqq66ffM/wR6nSfzBkXFRxAdKK
-# lFziGUovLp9Q9swk8P/sP4vnnqaTcKfk9x60hVdOMxvHw0xIL8dWyPBRMP83nQTl
-# q+GwTiUEsCgQri/+Ea8w6u6NCeMX8LzY5lqTaNl8QEOuSy1sZDSOOk/QpMQ7AA3M
-# GjmON2gtL+7RB3/nLfU5VEcger8Y+CO4HD0lpbnpRfqrhiJGEF+22h+wPkFMjKS3
-# 3qhuDWDwJxddGJwBoag4NZ3CYjCmdgKvcbE1qnjmsGTc6IU/I6v7sUhbm/Co1Xk7
-# xnOj5A==
+# BgkqhkiG9w0BCQUxDxcNMTUwNDIzMDA1MDAzWjAjBgkqhkiG9w0BCQQxFgQUbWne
+# qNOu0mtBC87rWvqgT2jBHTEwDQYJKoZIhvcNAQEBBQAEggEAQBuG8ZTtfFseuHtr
+# BxtP5OeAvoFfKCe7xsrYhDiRMYSxP0WSSC83X+cDMVNDXFFC8fCoYOacN7LWOe5W
+# +uEoUvkr1EoX51IHBpIu88nOrd19iYKj9J+LeTGEEcRxcJ9PBZrsR3TZeymH6ZNS
+# OJoSR+S3Xu08XNzwzCM9G3E2NVLSN3SiBzDhDsaufFN1QalHgZX2keGmDawZTDA3
+# cvXGfJNCoo1gridVzO38yxnAD2JEkU78SUQSrasOkCehnZXPfWXl2Ulvu3O1EeGv
+# 5orfLfx1XDkRK2+gLh/jOP7spafkPFCGHoh2KVVii1Lj6lVLpjrx3nWTCq3nunDx
+# c07fig==
 # SIG # End signature block
