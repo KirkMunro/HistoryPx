@@ -28,6 +28,7 @@ namespace HistoryPx
 
         protected Collection<PSObject> historicalOutput = new Collection<PSObject>();
         protected Collection<PSObject> capturedOutput = new Collection<PSObject>();
+        protected bool capturedOutputVariableConflict = false;
         protected bool adjustHistoryId = false;
         protected int removedObjectCount = 0;
         protected int removedHistoryInfoCount = 0;
@@ -48,6 +49,16 @@ namespace HistoryPx
 
             // Get the pipeline for the current command
             pipelineAst = Runspace.DefaultRunspace.GetCurrentPipelineAst();
+
+            // If the capture variable was passed in to OutVariable, replace it
+            // with null since HistoryPx handles that automatically
+            if (MyInvocation.BoundParameters.ContainsKey("OutVariable") &&
+                (string.Compare((string)MyInvocation.BoundParameters["OutVariable"], CaptureOutputConfiguration.VariableName, true) == 0))
+            {
+                capturedOutputVariableConflict = true;
+                MyInvocation.BoundParameters.Remove("OutVariable");
+                MyInvocation.BoundParameters.Add("OutVariable", "null");
+            }
 
             // Let the proxy target do its work
             outDefaultProxyHelper = new ProxyCmdletHelper(this);
@@ -280,15 +291,25 @@ namespace HistoryPx
                     // about more complex object data
                     if (!capturedOutput[0].BaseObject.GetType().IsValueType || CaptureOutputConfiguration.CaptureValueTypes)
                     {
-                        SessionState.PSVariable.Set(CaptureOutputConfiguration.VariableName, capturedOutput[0]);
+                        if (capturedOutputVariableConflict)
+                        {
+                            // This is a workaround for what appears to be a bug in PowerShell. The
+                            // issue is that $__ will be cleared automatically when Out-Default is
+                            // invoked if it only contains a single PSObject. If it contains a collection,
+                            // the collection is preserved. Weird.
+                            Collection<PSObject> capturedOutputCollection = new Collection<PSObject>();
+                            capturedOutputCollection.Add(capturedOutput[0]);
+                            SessionState.PSVariable.Set(CaptureOutputConfiguration.VariableName, capturedOutputCollection);
+                        }
+                        else
+                        {
+                            SessionState.PSVariable.Set(CaptureOutputConfiguration.VariableName, capturedOutput[0]);
+                        }
                     }
                 }
                 else if (capturedOutput.Count > 1)
                 {
-                    SessionState.PSVariable.Set(
-                        CaptureOutputConfiguration.VariableName,
-                        capturedOutput.ToArray()
-                        );
+                    SessionState.PSVariable.Set(CaptureOutputConfiguration.VariableName, capturedOutput.ToArray());
                 }
             }
 
