@@ -9,7 +9,7 @@ may have wanted to capture, and includes commands to configure how it decides
 when output should be captured.  Lastly, HistoryPx includes commands to manage
 the memory footprint that is used by extended history information.
 
-Copyright 2014 Kirk Munro
+Copyright 2015 Kirk Munro
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -24,48 +24,66 @@ See the License for the specific language governing permissions and
 limitations under the License.
 #############################################################################>
 
-#region Initialize the module.
+try {
+    #region Initialize the module.
 
-Invoke-Snippet -Name Module.Initialize
+    Invoke-Snippet -Name Module.Initialize
 
-#endregion
+    #endregion
 
-#region Import public function definitions.
+    #region Import public function definitions.
 
-Invoke-Snippet -Name ScriptFile.Import -Parameters @{
-    Path = Join-Path -Path $PSModuleRoot -ChildPath functions
+    Invoke-Snippet -Name ScriptFile.Import -Parameters @{
+        Path = Join-Path -Path $PSModuleRoot -ChildPath functions
+    }
+
+    #endregion
+
+    #region Export commands defined in nested modules.
+
+    . $PSModuleRoot\scripts\Export-BinaryModule.ps1
+
+    #endregion
+
+    #region Set the watermark to the hash code for the most recent error.
+
+    if ($global:Error.Count -gt 0) {
+        [HistoryPx.ExtendedHistoryTable]::Watermark = $global:Error[0].GetHashCode()
+    }
+
+    #endregion
+
+    #region Generate a warning if the output configuration variable is already configured.
+
+    $parentDefaultParameterValues = Get-Variable -Name PSDefaultParameterValues -Scope 1 -ValueOnly
+    if ($parentDefaultParameterValues.ContainsKey('Out-Default:OutVariable') -and
+        ($parentDefaultParameterValues['Out-Default:OutVariable'] -eq [HistoryPx.CaptureOutputConfiguration]::VariableName)) {
+        Write-Warning "$([HistoryPx.CaptureOutputConfiguration]::VariableName) is currently configured as the default OutVariable parameter for Out-Default. This configuration should be removed from PSDefaultParameterValues."
+    }
+
+    #endregion
+} catch {
+    throw
 }
-
-#endregion
-
-#region Export commands defined in nested modules.
-
-. $PSModuleRoot\scripts\Export-BinaryModule.ps1
-
-#endregion
-
-#region Set the watermark to the hash code for the most recent error.
-
-if ($global:Error.Count -gt 0) {
-    [HistoryPx.ExtendedHistoryTable]::Watermark = $global:Error[0].GetHashCode()
-}
-
-#endregion
 
 #region Clean-up the module when it is removed.
 
 $PSModule.OnRemove = {
-    #region Clear the extended history table contents.
+    try {
+        #region Clear the extended history table contents.
 
-    [HistoryPx.ExtendedHistoryTable]::Clear($true)
+        [HistoryPx.ExtendedHistoryTable]::Clear($true)
 
-    #endregion
+        #endregion
 
-    #region Remove the global last captured output variable.
+        #region Remove the global last captured output variable.
 
-    Remove-Variable -Name ([HistoryPx.CaptureOutputConfiguration]::VariableName) -Scope Global -Force -ErrorAction Ignore
+        Remove-Variable -Name ([HistoryPx.CaptureOutputConfiguration]::VariableName) -Scope Global -Force -ErrorAction Ignore
 
-    #endregion
+        #endregion
+    } catch {
+        throw
+    }
 }
 
 #endregion

@@ -9,7 +9,7 @@ may have wanted to capture, and includes commands to configure how it decides
 when output should be captured.  Lastly, HistoryPx includes commands to manage
 the memory footprint that is used by extended history information.
 
-Copyright 2014 Kirk Munro
+Copyright 2015 Kirk Munro
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
