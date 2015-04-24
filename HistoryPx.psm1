@@ -56,9 +56,31 @@ try {
     #region Generate a warning if the output configuration variable is already configured.
 
     $parentDefaultParameterValues = Get-Variable -Name PSDefaultParameterValues -Scope 1 -ValueOnly
-    if ($parentDefaultParameterValues.ContainsKey('Out-Default:OutVariable') -and
+    if ($parentDefaultParameterValues.Contains('Out-Default:OutVariable') -and
         ($parentDefaultParameterValues['Out-Default:OutVariable'] -eq [HistoryPx.CaptureOutputConfiguration]::VariableName)) {
         Write-Warning "$([HistoryPx.CaptureOutputConfiguration]::VariableName) is currently configured as the default OutVariable parameter for Out-Default. This configuration should be removed from PSDefaultParameterValues."
+    }
+
+    #endregion
+
+    #region Clean-up the module when it is removed.
+
+    $PSModule.OnRemove = {
+        try {
+            #region Clear the extended history table contents.
+
+            [HistoryPx.ExtendedHistoryTable]::Clear($true)
+
+            #endregion
+
+            #region Remove the global last captured output variable.
+
+            Remove-Variable -Name ([HistoryPx.CaptureOutputConfiguration]::VariableName) -Scope Global -Force -ErrorAction Ignore
+
+            #endregion
+        } catch {
+            throw
+        }
     }
 
     #endregion
@@ -66,33 +88,11 @@ try {
     throw
 }
 
-#region Clean-up the module when it is removed.
-
-$PSModule.OnRemove = {
-    try {
-        #region Clear the extended history table contents.
-
-        [HistoryPx.ExtendedHistoryTable]::Clear($true)
-
-        #endregion
-
-        #region Remove the global last captured output variable.
-
-        Remove-Variable -Name ([HistoryPx.CaptureOutputConfiguration]::VariableName) -Scope Global -Force -ErrorAction Ignore
-
-        #endregion
-    } catch {
-        throw
-    }
-}
-
-#endregion
-
 # SIG # Begin signature block
 # MIIZIAYJKoZIhvcNAQcCoIIZETCCGQ0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUwsEkrWjQ0MqceBPvTu/NUY4p
-# qaegghRWMIID7jCCA1egAwIBAgIQfpPr+3zGTlnqS5p31Ab8OzANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU670Fu7QzDYxYz4zlo1U8xsY7
+# +tCgghRWMIID7jCCA1egAwIBAgIQfpPr+3zGTlnqS5p31Ab8OzANBgkqhkiG9w0B
 # AQUFADCBizELMAkGA1UEBhMCWkExFTATBgNVBAgTDFdlc3Rlcm4gQ2FwZTEUMBIG
 # A1UEBxMLRHVyYmFudmlsbGUxDzANBgNVBAoTBlRoYXd0ZTEdMBsGA1UECxMUVGhh
 # d3RlIENlcnRpZmljYXRpb24xHzAdBgNVBAMTFlRoYXd0ZSBUaW1lc3RhbXBpbmcg
@@ -205,23 +205,23 @@ $PSModule.OnRemove = {
 # aWdpY2VydC5jb20xLjAsBgNVBAMTJURpZ2lDZXJ0IEFzc3VyZWQgSUQgQ29kZSBT
 # aWduaW5nIENBLTECEA3/99JYTi+N6amVWfXCcCMwCQYFKw4DAhoFAKB4MBgGCisG
 # AQQBgjcCAQwxCjAIoAKAAKECgAAwGQYJKoZIhvcNAQkDMQwGCisGAQQBgjcCAQQw
-# HAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFImO
-# FNCihM3JKelldZLWLo2ZXwTEMA0GCSqGSIb3DQEBAQUABIIBAB19mUO3MCeT1xMu
-# YszcpVBXrSsdrAYB5ZaRyW/AormLZ5aqTse8rMGY1z7cILIp1tq2oPfcsUugVDM6
-# DXhrqkIrFGAWLAiC17UyUkhd5cldad2QRagzUl+JRz3N1kdfT6W1F2Nw04tnWiYR
-# Td92dnuCU1djsmvhxmtwQLLgr5MJvtqUeNQ4qbUCAwc1ox0Q5BKl8lhp60QXhvFN
-# 8YIxijTx6iYnnRER1jX/qMqlUjOEEm8/S4g0qkKSM86U75iv/8wqSBnWCjAWbkSt
-# KI4BYbCX6WqAOe0VgNo9+PSYZeSTWzYvtovYuMA6s/q4IKPxAoYhrASWGrt5oG+z
-# BBGPEUChggILMIICBwYJKoZIhvcNAQkGMYIB+DCCAfQCAQEwcjBeMQswCQYDVQQG
+# HAYKKwYBBAGCNwIBCzEOMAwGCisGAQQBgjcCARUwIwYJKoZIhvcNAQkEMRYEFCc4
+# km7Z+kxPfAhv4ZVsvnIyPCyiMA0GCSqGSIb3DQEBAQUABIIBABGoUN1bj6h68W+8
+# dQfLp4QkVRCP6X9bN3jpze9ARk7FJLy0Nn/KPpzcF0fKiSouUdKCFOonU6Yo6Tv6
+# wSxzFHGfAuZPKhSotS7+prmuy06mie20WhLRVxBOuZMLBimv59nfHJB7UcUqtcBo
+# lGTSC1WMwPaF+dAkIg6Uq0BKYsBN9uPQ8lrclssbaBY7+3R2M9QHcvbM319bnWb7
+# yI5XTDDz/n7gqdhiydZEd8RIdM24TRwrHCjEIlSvK59Gk+THACooWH1lg/Y5Jkt9
+# 8ZAVYUH+YtZdS5qzibS5CuJxQArGnzNGCGAcd856SdKc0cWBDRqJd5+SV+yrlcsM
+# u97+u6uhggILMIICBwYJKoZIhvcNAQkGMYIB+DCCAfQCAQEwcjBeMQswCQYDVQQG
 # EwJVUzEdMBsGA1UEChMUU3ltYW50ZWMgQ29ycG9yYXRpb24xMDAuBgNVBAMTJ1N5
 # bWFudGVjIFRpbWUgU3RhbXBpbmcgU2VydmljZXMgQ0EgLSBHMgIQDs/0OMj+vzVu
 # BNhqmBsaUDAJBgUrDgMCGgUAoF0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAc
-# BgkqhkiG9w0BCQUxDxcNMTUwNDIzMDA1MDAyWjAjBgkqhkiG9w0BCQQxFgQUUcal
-# orq9YGpOAjjtOO+fqbNGP4EwDQYJKoZIhvcNAQEBBQAEggEADzwNvvO0ovezk/ts
-# kbgrPlBzzhoGtshRKBdyVN/r7NZWR6uMlkmcq0pcDNQoHgJnB9I54rAx7BBrSqJp
-# k64OxVCJSdayD2jhyNjSQxgpOxpbahl+WJ+yyjyWjlu2g3ne8tDTi4d/9vLaGL1C
-# lsmy4uvh/4W1D1P/4RVDg+ShKY1BYLzQwmI9teyW1DKK9LVeVdmLiws+8Q3JYWJS
-# ien391wpA2ST9MSDMcnBCrUunQDFOOFl30z2cRai/olh0+MYHn6bsAYEf5oMn18H
-# 2Uw0cpOXKg8wuBiW54EpFVV3ir0W+SnkySx8MBaHkAEm8rubUqP8ZaoAXUovaz1m
-# cdTaOw==
+# BgkqhkiG9w0BCQUxDxcNMTUwNDI0MjEwNDE0WjAjBgkqhkiG9w0BCQQxFgQUDFi7
+# 5pmNpFKY3OYBmvjMhmGnywcwDQYJKoZIhvcNAQEBBQAEggEAAsEyHKEfjezfwf+K
+# Nop1edzBKZk0JYarakypyA7wUq9GaqmHTVLEBvYhNGcjaIc74i2UR3cUO9qPaXwH
+# dksnEHbWjSdJ40xsCFbsJoXpjyuz0seSzFy4mJHyj/NDE+ax9JkO1EA0zfTei0F4
+# j9GB/TBHyZw1KrLmHCtuOHU72QtehKU7ziTEyiB8Cemo56ifG9wb55WvZv3pDBAX
+# 7r/8/XqYojPpS5BlWi0z8TqCKUIiSjZRl6JVX8ZXvsa2wPNrNSX9ga4DEYPQ3bER
+# oU/ZpcNsQMlaH3J6pr+/f2dpONqoiNbF11eEHXjDBKz7NO1/LsBir9qQJNlEwtSM
+# fWexOA==
 # SIG # End signature block
