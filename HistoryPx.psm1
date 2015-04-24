@@ -62,28 +62,28 @@ try {
     }
 
     #endregion
+
+    #region Clean-up the module when it is removed.
+
+    $PSModule.OnRemove = {
+        try {
+            #region Clear the extended history table contents.
+
+            [HistoryPx.ExtendedHistoryTable]::Clear($true)
+
+            #endregion
+
+            #region Remove the global last captured output variable.
+
+            Remove-Variable -Name ([HistoryPx.CaptureOutputConfiguration]::VariableName) -Scope Global -Force -ErrorAction Ignore
+
+            #endregion
+        } catch {
+            throw
+        }
+    }
+
+    #endregion
 } catch {
     throw
 }
-
-#region Clean-up the module when it is removed.
-
-$PSModule.OnRemove = {
-    try {
-        #region Clear the extended history table contents.
-
-        [HistoryPx.ExtendedHistoryTable]::Clear($true)
-
-        #endregion
-
-        #region Remove the global last captured output variable.
-
-        Remove-Variable -Name ([HistoryPx.CaptureOutputConfiguration]::VariableName) -Scope Global -Force -ErrorAction Ignore
-
-        #endregion
-    } catch {
-        throw
-    }
-}
-
-#endregion
