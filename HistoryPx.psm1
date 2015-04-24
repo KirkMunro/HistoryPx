@@ -56,7 +56,7 @@ try {
     #region Generate a warning if the output configuration variable is already configured.
 
     $parentDefaultParameterValues = Get-Variable -Name PSDefaultParameterValues -Scope 1 -ValueOnly
-    if ($parentDefaultParameterValues.ContainsKey('Out-Default:OutVariable') -and
+    if ($parentDefaultParameterValues.Contains('Out-Default:OutVariable') -and
         ($parentDefaultParameterValues['Out-Default:OutVariable'] -eq [HistoryPx.CaptureOutputConfiguration]::VariableName)) {
         Write-Warning "$([HistoryPx.CaptureOutputConfiguration]::VariableName) is currently configured as the default OutVariable parameter for Out-Default. This configuration should be removed from PSDefaultParameterValues."
     }
