@@ -64,8 +64,18 @@ namespace HistoryPx
                                         string pipelineString = (string)_historyStringField.GetValue(target);
                                         if (pipelineString != null)
                                         {
-                                            // If we found the pipeline string, generate and return the ScriptBlockAst
-                                            return ScriptBlock.Create(pipelineString).Ast as ScriptBlockAst;
+                                            try
+                                            {
+                                                // If we found the pipeline string, generate and return the ScriptBlockAst
+                                                return ScriptBlock.Create(pipelineString).Ast as ScriptBlockAst;
+                                            }
+                                            catch
+                                            {
+                                                // If we failed to generate the ScriptBlockAst object, then the pipeline does
+                                                // not parse at all; return null in this case and the caller will handle it
+                                                // properly by keeping the last $__ value
+                                                return null;
+                                            }
                                         }
                                     }
                                 }

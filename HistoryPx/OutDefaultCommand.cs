@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Language;
 using System.Management.Automation.Runspaces;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.PowerShell.Commands;
 
@@ -25,6 +21,9 @@ namespace HistoryPx
 
         private static string writeErrorStream = "writeErrorStream";
         private static string writeWarningStream = "writeWarningStream";
+        private static string writeVerboseStream = "writeVerboseStream";
+        private static string writeDebugStream = "writeDebugStream";
+        private static string writeInformationStream = "writeInformationStream";
 
         protected Collection<PSObject> historicalOutput = new Collection<PSObject>();
         protected Collection<PSObject> capturedOutput = new Collection<PSObject>();
@@ -145,6 +144,17 @@ namespace HistoryPx
 
             // Let the proxy target do its work
             outDefaultProxyHelper.Process(InputObject);
+
+            // After the default Out-Default command has done it's work, we can remove any stream redirection flags
+            // on the object. This fixes a bug in PowerShell that causes some ErrorRecord objects to still render
+            // in red long after the error has occurred.
+            foreach (string streamRedirectionFlag in new string [] { writeErrorStream, writeWarningStream, writeVerboseStream, writeDebugStream, writeInformationStream })
+            {
+                if (InputObject.Properties[streamRedirectionFlag] != null)
+                {
+                    InputObject.Properties.Remove(streamRedirectionFlag);
+                }
+            }
         }
 
         protected override void EndProcessing()
