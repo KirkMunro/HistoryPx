@@ -145,14 +145,17 @@ namespace HistoryPx
             // Let the proxy target do its work
             outDefaultProxyHelper.Process(InputObject);
 
-            // After the default Out-Default command has done it's work, we can remove any stream redirection flags
-            // on the object. This fixes a bug in PowerShell that causes some ErrorRecord objects to still render
-            // in red long after the error has occurred.
-            foreach (string streamRedirectionFlag in new string [] { writeErrorStream, writeWarningStream, writeVerboseStream, writeDebugStream, writeInformationStream })
+            if (MyInvocation.BoundParameters.ContainsKey("InputObject") && (InputObject != null))
             {
-                if (InputObject.Properties[streamRedirectionFlag] != null)
+                // After the default Out-Default command has done it's work, we can remove any stream redirection flags
+                // on the object. This fixes a bug in PowerShell that causes some ErrorRecord objects to still render
+                // in red long after the error has occurred.
+                foreach (string streamRedirectionFlag in new string[] { writeErrorStream, writeWarningStream, writeVerboseStream, writeDebugStream, writeInformationStream })
                 {
-                    InputObject.Properties.Remove(streamRedirectionFlag);
+                    if (InputObject.Properties[streamRedirectionFlag] != null)
+                    {
+                        InputObject.Properties.Remove(streamRedirectionFlag);
+                    }
                 }
             }
         }
