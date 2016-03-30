@@ -1,11 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Management.Automation;
-using System.Management.Automation.Language;
-using System.Management.Automation.Runspaces;
-using System.Text.RegularExpressions;
-using Microsoft.PowerShell.Commands;
+﻿using System.Management.Automation;
 
 namespace HistoryPx
 {
@@ -41,52 +34,10 @@ namespace HistoryPx
             {
                 foreach (PSObject item in steppablePipeline.Process())
                 {
-                    // If the item we receive is not a history info object, pass it through as is
-                    if (!(item.BaseObject is HistoryInfo))
-                    {
-                        WriteObject(item);
-                        continue;
-                    }
-
-                    // Look up the extended history information
-                    HistoryInfo hi = (HistoryInfo)item.BaseObject;
-                    ExtendedHistoryInfo ehi = ExtendedHistoryTable.Item(hi.Id);
-
-                    // Add a custom type name to identify the extended object
-                    item.TypeNames.Insert(0,"Microsoft.PowerShell.Commands.HistoryInfo#Extended");
-
-                    // Add a duration property to the extended history information object
-                    item.Members.Add(new PSNoteProperty("Duration", hi.EndExecutionTime != null ? hi.EndExecutionTime - hi.StartExecutionTime : (object)null));
-
-                    // Add a success property to the extended history information object
-                    bool success = false;
-                    if (hi.ExecutionStatus != PipelineState.Failed)
-                    {
-                        if (ehi != null)
-                        {
-                            success = (bool)ehi.CommandSuccessful;
-                        }
-                        else
-                        {
-                            success = hi.ExecutionStatus == PipelineState.Completed;
-                        }
-                    }
-                    item.Members.Add(new PSNoteProperty("Success", success));
-
-                    // Add an output property to the extended history information object
-                    item.Members.Add(new PSNoteProperty("Output", ehi != null ? ehi.Output : null));
-
-                    // Add an outputcount property to the extended history information object
-                    item.Members.Add(new PSNoteProperty("OutputCount", ehi != null && ehi.OutputCount > 0 ? ehi.OutputCount : (object)null));
-
-                    // Add an error property to the extended history information object
-                    item.Members.Add(new PSNoteProperty("Error", ehi != null ? ehi.Error : null));
-
-                    // Add an errorcount property to the extended history information object
-                    item.Members.Add(new PSNoteProperty("ErrorCount", ehi != null ? ehi.Error.Length : (object)null));
-
-                    // Now write out the extended history information object to the pipeline
-                    WriteObject(item);
+                    // Pass the object through the ExtendedHistoryManager to add extended history
+                    // information if it is a HistoryInfo object, and write the resulting object
+                    // out to the pipeline
+                    WriteObject(ExtendedHistoryManager.ExtendHistoryInfoObject(item));
                 }
             }
         }
@@ -98,6 +49,8 @@ namespace HistoryPx
             {
                 foreach (PSObject item in steppablePipeline.End())
                 {
+                    // We never get history information here, so we can just write whatever we get
+                    // out to the pipeline
                     WriteObject(item);
                 }
             }

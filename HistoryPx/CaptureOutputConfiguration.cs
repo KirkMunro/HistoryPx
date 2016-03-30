@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Management.Automation;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace HistoryPx
 {
@@ -8,7 +7,7 @@ namespace HistoryPx
     {
         static public string VariableName = "__";
         static public int MaximumItemCount = 1000;
-        static public List<string> ExcludedTypes = new List<string>(new string[] {
+        static public ImmutableList<string> ExcludedTypes = new List<string>(new string[] {
             "HistoryPx.ExtendedHistoryConfiguration",
             "HistoryPx.CaptureOutputConfiguration",
             "System.String",
@@ -20,12 +19,13 @@ namespace HistoryPx
             "System.Management.Automation.PSMemberInfo",
             "Microsoft.PowerShell.Commands.MemberDefinition",
             "System.Type",
-            "System.Management.Automation.PSVariable"
-        });
+            "System.Management.Automation.PSVariable",
+            "Microsoft.PowerShell.Commands.HistoryInfo#Extended"
+        }).ToImmutableList<string>();
         static public bool CaptureValueTypes = false;
         static public bool CaptureNull = false;
         
-        static internal string PowerShellVariableName {
+        static internal string PowerShellVariableIdentifier {
             get
             {
                 return string.Format("${0}", VariableName);

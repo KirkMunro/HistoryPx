@@ -1,11 +1,13 @@
-﻿using System.Collections;
+﻿using Microsoft.PowerShell.Commands;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Language;
 using System.Management.Automation.Runspaces;
 using System.Text.RegularExpressions;
-using Microsoft.PowerShell.Commands;
+
 
 namespace HistoryPx
 {
@@ -25,8 +27,9 @@ namespace HistoryPx
         private static string writeDebugStream = "writeDebugStream";
         private static string writeInformationStream = "writeInformationStream";
 
-        protected Collection<PSObject> historicalOutput = new Collection<PSObject>();
-        protected Collection<PSObject> capturedOutput = new Collection<PSObject>();
+        protected List<PSObject> historicalOutput = new List<PSObject>(ExtendedHistoryManager.MaximumItemCountPerEntry);
+        protected List<PSObject> capturedOutput = new List<PSObject>();
+        protected List<IScriptExtent> outputSources = new List<IScriptExtent>();
         protected bool capturedOutputVariableConflict = false;
         protected bool adjustHistoryId = false;
         protected int removedObjectCount = 0;
@@ -111,7 +114,7 @@ namespace HistoryPx
                     {
                         // HistoryInfo and ExtendedHistoryInfo instances are omitted from extended
                         // history information data to keep the memory footprint under control
-                        if (historicalOutput.Count < ExtendedHistoryTable.MaximumItemCountPerEntry)
+                        if (historicalOutput.Count < ExtendedHistoryManager.MaximumItemCountPerEntry)
                         {
                             historicalOutput.Add(InputObject);
                         }
@@ -124,6 +127,7 @@ namespace HistoryPx
                     {
                         removedHistoryInfoCount++;
                     }
+
                     if ((capturedOutput.Count < CaptureOutputConfiguration.MaximumItemCount) &&
                         (CaptureOutputConfiguration.ExcludedTypes != null) &&
                         (CaptureOutputConfiguration.ExcludedTypes.Count > 0) &&
@@ -150,11 +154,30 @@ namespace HistoryPx
                 // After the default Out-Default command has done it's work, we can remove any stream redirection flags
                 // on the object. This fixes a bug in PowerShell that causes some ErrorRecord objects to still render
                 // in red long after the error has occurred.
+                bool standardOutput = true;
                 foreach (string streamRedirectionFlag in new string[] { writeErrorStream, writeWarningStream, writeVerboseStream, writeDebugStream, writeInformationStream })
                 {
                     if (InputObject.Properties[streamRedirectionFlag] != null)
                     {
+                        standardOutput = false;
                         InputObject.Properties.Remove(streamRedirectionFlag);
+                    }
+                }
+
+                // For any data that is written to the the standard output stream, track the data source
+                if (standardOutput)
+                {
+                    // Get the current call stack so that we can identify the source of incoming data
+                    IEnumerable<CallStackFrame> callStack = Runspace.DefaultRunspace.GetCallStack();
+
+                    // Use the call stack to identify the caller's extent
+                    IScriptExtent callersExtent = callStack.FirstOrDefault()
+                                                           ?.GetExtent();
+
+                    // If we found the extent, store it if we haven't stored it already for this command
+                    if ((callersExtent != null) && !outputSources.Contains(callersExtent))
+                    {
+                        outputSources.Add(callersExtent);
                     }
                 }
             }
@@ -163,7 +186,7 @@ namespace HistoryPx
         protected override void EndProcessing()
         {
             // Get the current value of the $? variable
-            bool commandSucceeded = (bool)SessionState.PSVariable.Get("?").Value;
+            bool lastCommandSucceeded = (bool)SessionState.PSVariable.Get("?")?.Value;
 
             // If the history id needs to be updated (because we received error records
             // with no history id, meaning they come from the previous command), update
@@ -203,67 +226,63 @@ namespace HistoryPx
                         // Don't update the last captured output when assigning a value (=, +=, -=, *=, /=, %=)
                         continue;
                     }
-                    else
+
+                    FunctionDefinitionAst functionast = pipelineAst.EndBlock.Statements[index] as FunctionDefinitionAst;
+                    if (functionast != null)
                     {
-                        FunctionDefinitionAst functionast = pipelineAst.EndBlock.Statements[index] as FunctionDefinitionAst;
-                        if (functionast != null)
+                        // Don't update the last captured output when defining a function
+                        continue;
+                    }
+
+                    PipelineAst pipeast = pipelineAst.EndBlock.Statements[index] as PipelineAst;
+                    if ((pipeast != null) &&
+                        (pipeast.PipelineElements.Count == 1))
+                    {
+                        CommandExpressionAst cmdexast = pipeast.PipelineElements[0] as CommandExpressionAst;
+                        if (cmdexast != null)
                         {
-                            // Don't update the last captured output when defining a function
-                            continue;
-                        }
-                        else
-                        {
-                            PipelineAst pipeast = pipelineAst.EndBlock.Statements[index] as PipelineAst;
-                            if ((pipeast != null) &&
-                                (pipeast.PipelineElements.Count == 1))
+                            UnaryExpressionAst uexast = cmdexast.Expression as UnaryExpressionAst;
+                            if (uexast != null)
                             {
-                                CommandExpressionAst cmdexast = pipeast.PipelineElements[0] as CommandExpressionAst;
-                                if (cmdexast != null)
+                                if ((uexast.TokenKind == TokenKind.PlusPlus) ||
+                                    (uexast.TokenKind == TokenKind.MinusMinus) ||
+                                    (uexast.TokenKind == TokenKind.PostfixPlusPlus) ||
+                                    (uexast.TokenKind == TokenKind.PostfixMinusMinus))
                                 {
-                                    UnaryExpressionAst uexast = cmdexast.Expression as UnaryExpressionAst;
-                                    if (uexast != null)
+                                    // Don't update the last captured output when incrementing or decrementing a value (++, --)
+                                    continue;
+                                }
+                            }
+                            else
+                            {
+                                var expRoot = cmdexast.Expression;
+                                do
+                                {
+                                    IndexExpressionAst idxast = expRoot as IndexExpressionAst;
+                                    if (idxast != null)
                                     {
-                                        if ((uexast.TokenKind == TokenKind.PlusPlus) ||
-                                            (uexast.TokenKind == TokenKind.MinusMinus) ||
-                                            (uexast.TokenKind == TokenKind.PostfixPlusPlus) ||
-                                            (uexast.TokenKind == TokenKind.PostfixMinusMinus))
-                                        {
-                                            // Don't update the last captured output when incrementing or decrementing a value (++, --)
-                                            continue;
-                                        }
+                                        // When we encounter an index, look at the Target property
+                                        expRoot = idxast.Target;
                                     }
                                     else
                                     {
-                                        var expRoot = cmdexast.Expression;
-                                        do
+                                        MemberExpressionAst mexast = expRoot as MemberExpressionAst;
+                                        if (mexast != null)
                                         {
-                                            IndexExpressionAst idxast = expRoot as IndexExpressionAst;
-                                            if (idxast != null)
-                                            {
-                                                // When we encounter an index, look at the Target property
-                                                expRoot = idxast.Target;
-                                            }
-                                            else
-                                            {
-                                                MemberExpressionAst mexast = expRoot as MemberExpressionAst;
-                                                if (mexast != null)
-                                                {
-                                                    // When we encounter a member expression, look at the parent Expression property
-                                                    expRoot = mexast.Expression;
-                                                }
-                                                else
-                                                {
-                                                    // Try to convert the current Expression into a variable
-                                                    expRoot = expRoot as VariableExpressionAst;
-                                                }
-                                            }
-                                        } while ((expRoot != null) && !(expRoot is VariableExpressionAst));
-                                        if (expRoot is VariableExpressionAst)
+                                            // When we encounter a member expression, look at the parent Expression property
+                                            expRoot = mexast.Expression;
+                                        }
+                                        else
                                         {
-                                            // Don't update the last captured output when referencing a variable
-                                            continue;
+                                            // Try to convert the current Expression into a variable
+                                            expRoot = expRoot as VariableExpressionAst;
                                         }
                                     }
+                                } while ((expRoot != null) && !(expRoot is VariableExpressionAst));
+                                if (expRoot is VariableExpressionAst)
+                                {
+                                    // Don't update the last captured output when referencing a variable
+                                    continue;
                                 }
                             }
                         }
@@ -282,9 +301,9 @@ namespace HistoryPx
             if (!keepLastDoubleUnderbarValue)
             {
                 keepLastDoubleUnderbarValue = (pipelineAst.Find(x => ((x is VariableExpressionAst) &&
-                                                                      (string.Compare(((VariableExpressionAst)x).Extent.Text, CaptureOutputConfiguration.PowerShellVariableName, true) == 0)) ||
+                                                                      (string.Compare(((VariableExpressionAst)x).Extent.Text, CaptureOutputConfiguration.PowerShellVariableIdentifier, true) == 0)) ||
                                                                      ((x is IndexExpressionAst) &&
-                                                                      (string.Compare(((IndexExpressionAst)x).Target.Extent.Text, CaptureOutputConfiguration.PowerShellVariableName, true) == 0)), true) != null);
+                                                                      (string.Compare(((IndexExpressionAst)x).Target.Extent.Text, CaptureOutputConfiguration.PowerShellVariableIdentifier, true) == 0)), true) != null);
             }
 
             // If we are not keeping the last value, then update the variable appropriately
@@ -328,11 +347,11 @@ namespace HistoryPx
 
             // Add the error log entries that have been added since the last change in runspace
             // availability to the error collection
-            ArrayList errorLog = (ArrayList)SessionState.PSVariable.Get("Error").Value;
-            Collection<PSObject> commandErrors = new Collection<PSObject>();
+            var errorLog = SessionState.PSVariable.Get("Error")?.Value as IEnumerable;
+            List<PSObject> commandErrors = new List<PSObject>();
             foreach (var errorLogEntry in errorLog)
             {
-                if ((ExtendedHistoryTable.Watermark != -1) && (errorLogEntry.GetHashCode() == ExtendedHistoryTable.Watermark))
+                if ((ExtendedHistoryManager.Watermark != -1) && (errorLogEntry.GetHashCode() == ExtendedHistoryManager.Watermark))
                 {
                     // Stop when we reach our error log watermark
                     break;
@@ -350,29 +369,21 @@ namespace HistoryPx
                 commandErrors.Add(new PSObject(errorLogEntry));
             }
 
+            // If we found some errors, update our watermark and reverse the error list
             if (commandErrors.Count > 0)
             {
-                // If we found some errors, update our watermark and reverse the error list
-                ExtendedHistoryTable.Watermark = commandErrors[0].BaseObject.GetHashCode();
-                commandErrors = new Collection<PSObject>(commandErrors.Reverse().ToList());
+                ExtendedHistoryManager.Watermark = commandErrors[0].BaseObject.GetHashCode();
+                commandErrors.Reverse();
             }
 
             // If we have no output or errors, then mark the command a success
             if ((outputCount == 0) && (commandErrors.Count == 0))
             {
-                commandSucceeded = true;
+                lastCommandSucceeded = true;
             }
 
-            // If we just removed the module, reset the OnRemove flag; otherwise, add a
-            // detailed history entry to the detailed history table
-            if (ExtendedHistoryTable.OnRemove)
-            {
-                ExtendedHistoryTable.OnRemove = false;
-            }
-            else
-            {
-                ExtendedHistoryTable.Add(historyId, commandSucceeded, historicalOutput, outputCount, commandErrors);
-            }
+            // Add a detailed history entry to the detailed history table
+            ExtendedHistoryManager.Add(historyId, historicalOutput, outputCount, outputSources, commandErrors, lastCommandSucceeded);
 
             // Let the proxy target do its work
             outDefaultProxyHelper.End();
