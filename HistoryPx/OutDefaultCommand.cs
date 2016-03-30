@@ -171,7 +171,7 @@ namespace HistoryPx
                     IEnumerable<CallStackFrame> callStack = Runspace.DefaultRunspace.GetCallStack();
 
                     // Use the call stack to identify the caller's extent
-                    IScriptExtent callersExtent = callStack.FirstOrDefault()
+                    IScriptExtent callersExtent = callStack?.FirstOrDefault()
                                                            ?.GetExtent();
 
                     // If we found the extent, store it if we haven't stored it already for this command

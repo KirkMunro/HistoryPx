@@ -110,15 +110,22 @@ namespace HistoryPx
             // that shouldn't be there so that we can get the call stack via an API instead
             // of via a PowerShell cmdlet.
             Assembly smaAssembly = typeof(PowerShell).Assembly;
-            Type scriptDebuggerType = smaAssembly.GetType("System.Management.Automation.ScriptDebugger");
-            if ((scriptDebuggerType == null) || !scriptDebuggerType.IsInstanceOfType(runspace.Debugger))
+            Type debuggerType = smaAssembly.GetType("System.Management.Automation.ScriptDebugger");
+            if ((debuggerType == null) || !debuggerType.IsInstanceOfType(runspace.Debugger))
+            {
+                // PowerShell 3 (and maybe 4?) doesn't use the ScriptDebugger type, in which
+                // case we fall back to the Debugger type where the GetCallStack method will
+                // be defined
+                debuggerType = runspace.Debugger?.GetType();
+            }
+            if (debuggerType == null)
             {
                 return null;
             }
 
-            var scriptDebugger = Convert.ChangeType(runspace.Debugger, scriptDebuggerType);
-            return scriptDebuggerType.GetMethod("GetCallStack", publicOrPrivateInstance)
-                                    ?.Invoke(scriptDebugger, new object[0]) as IEnumerable<CallStackFrame>;
+            var scriptDebugger = Convert.ChangeType(runspace.Debugger, debuggerType);
+            return debuggerType.GetMethod("GetCallStack", publicOrPrivateInstance)
+                              ?.Invoke(scriptDebugger, new object[0]) as IEnumerable<CallStackFrame>;
         }
 
         internal static IScriptExtent GetExtent(this CallStackFrame callStackFrame)
