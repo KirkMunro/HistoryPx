@@ -108,7 +108,7 @@ namespace HistoryPx
         internal static int MaximumEntryCount { get; set; } = 200;
         internal static int MaximumItemCountPerEntry { get; set; } = 1000;
 
-        public static int Watermark
+        internal static int Watermark
         {
             get
             {
