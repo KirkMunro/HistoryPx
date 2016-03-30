@@ -55,8 +55,8 @@ function Get-ExtendedHistoryConfiguration {
 
         [pscustomobject]@{
                           PSTypeName = 'HistoryPx.ExtendedHistoryConfiguration'
-                   MaximumEntryCount = [HistoryPx.ExtendedHistoryTable]::MaximumEntryCount
-            MaximumItemCountPerEntry = [HistoryPx.ExtendedHistoryTable]::MaximumItemCountPerEntry
+                   MaximumEntryCount = [HistoryPx.ExtendedHistoryManager]::MaximumEntryCount
+            MaximumItemCountPerEntry = [HistoryPx.ExtendedHistoryManager]::MaximumItemCountPerEntry
         }
 
         #endregion

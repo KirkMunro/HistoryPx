@@ -27,7 +27,7 @@ limitations under the License.
 @{
       ModuleToProcess = 'HistoryPx.psm1'
 
-        ModuleVersion = '1.0.4.13'
+        ModuleVersion = '1.0.5.14'
 
                  GUID = '1ceaf4bf-dc01-4790-a06d-c8224daa7027'
 
@@ -50,11 +50,7 @@ limitations under the License.
                         'SnippetPx'
                         )
 
-      CmdletsToExport = @(
-                        'Clear-History'
-                        'Get-History'
-                        'Out-Default'
-                        )
+      AliasesToExport = @()
 
     FunctionsToExport = @(
                         'Get-CaptureOutputConfiguration'
@@ -63,11 +59,19 @@ limitations under the License.
                         'Set-ExtendedHistoryConfiguration'
                         )
 
+      CmdletsToExport = @(
+                        'Clear-History'
+                        'Get-History'
+                        'Out-Default'
+                        )
+
+    VariablesToExport = @()
+
        TypesToProcess = @(
                         'types.ps1xml'
                         )
 
-      FormatsToProcess = @(
+     FormatsToProcess = @(
                         'format.ps1xml'
                         )
 
@@ -92,7 +96,7 @@ limitations under the License.
                                 ExternalModuleDependencies = @(
                                     'Microsoft.PowerShell.Utility'
                                 )
-                                Tags = 'history Clear-History Get-History Out-Default'
+                                Tags = 'history','Clear-History','Get-History','Out-Default'
                                 LicenseUri = 'http://apache.org/licenses/LICENSE-2.0.txt'
                                 ProjectUri = 'https://github.com/KirkMunro/HistoryPx'
                                 IconUri = ''

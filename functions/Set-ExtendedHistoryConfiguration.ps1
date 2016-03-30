@@ -83,7 +83,7 @@ function Set-ExtendedHistoryConfiguration {
         foreach ($parameterName in @('MaximumEntryCount','MaximumItemCountPerEntry')) {
             if ($PSCmdlet.MyInvocation.BoundParameters.ContainsKey($parameterName)) {
                 if ($PSCmdlet.ShouldProcess($parameterName)) {
-                    [HistoryPx.ExtendedHistoryTable]::$parameterName = $PSCmdlet.MyInvocation.BoundParameters.$parameterName
+                    [HistoryPx.ExtendedHistoryManager]::$parameterName = $PSCmdlet.MyInvocation.BoundParameters.$parameterName
                 }
             }
         }

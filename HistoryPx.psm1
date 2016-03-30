@@ -32,13 +32,13 @@ trap {throw $_}
 
 #region Initialize the module.
 
-Invoke-Snippet -Name Module.Initialize
+Invoke-Snippet -Name Module.Initialize -ModuleName SnippetPx
 
 #endregion
 
 #region Import public function definitions.
 
-Invoke-Snippet -Name ScriptFile.Import -Parameters @{
+Invoke-Snippet -Name ScriptFile.Import -ModuleName SnippetPx -Parameters @{
     Path = Join-Path -Path $PSModuleRoot -ChildPath functions
 }
 
@@ -47,14 +47,6 @@ Invoke-Snippet -Name ScriptFile.Import -Parameters @{
 #region Export commands defined in nested modules.
 
 . $PSModuleRoot\scripts\Export-BinaryModule.ps1
-
-#endregion
-
-#region Set the watermark to the hash code for the most recent error.
-
-if ($global:Error.Count -gt 0) {
-    [HistoryPx.ExtendedHistoryTable]::Watermark = $global:Error[0].GetHashCode()
-}
 
 #endregion
 
@@ -71,16 +63,15 @@ if ($parentDefaultParameterValues.Contains('Out-Default:OutVariable') -and
 #region Clean-up the module when it is removed.
 
 $PSModule.OnRemove = {
+    [System.Diagnostics.DebuggerHidden()]
+    param()
     try {
-        #region Clear the extended history table contents.
+        #region Notify the binary module that it is being unloaded.
 
-        [HistoryPx.ExtendedHistoryTable]::Clear($true)
-
-        #endregion
-
-        #region Remove the global last captured output variable.
-
-        Remove-Variable -Name ([HistoryPx.CaptureOutputConfiguration]::VariableName) -Scope Global -Force -ErrorAction Ignore
+        # This is a workaround until PowerShell 5.0 becomes the minimum required version
+        # for this module (at which point the binary module can handle this internally).
+        $moduleAssemblyCleanup = New-Object -TypeName HistoryPx.ModuleAssemblyCleanup
+        $moduleAssemblyCleanup.OnRemove($ExecutionContext.SessionState.Module)
 
         #endregion
     } catch {
