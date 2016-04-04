@@ -27,7 +27,7 @@ limitations under the License.
 @{
        ModuleToProcess = 'HistoryPx.psm1'
 
-         ModuleVersion = '1.0.5.14'
+         ModuleVersion = '1.0.6.15'
 
                   GUID = '1ceaf4bf-dc01-4790-a06d-c8224daa7027'
 
