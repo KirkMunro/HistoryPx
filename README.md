@@ -50,11 +50,11 @@ on the system where they are invoked.
 ```powershell
 # If you don’t have HistoryPx installed already and you want to install it for all
 # all users (recommended, requires elevation)
-Install-Module HistoryPx,SnippetPx
+Install-Module -AllowClobber HistoryPx,SnippetPx
 
 # If you don't have HistoryPx installed already and you want to install it for the
 # current user only
-Install-Module HistoryPx,SnippetPx -Scope CurrentUser
+Install-Module -AllowClobber HistoryPx,SnippetPx -Scope CurrentUser
 
 # If you have HistoryPx installed and you want to update it
 Update-Module
